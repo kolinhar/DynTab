@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="EDGE" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>test</title>
+    <script src="DynTabVal.js"></script>
+</head>
+<body>
+    <select id="ici">
+        <option value="zero">0</option>
+        <option value="un">1</option>
+        <option value="deux" selected="selected">2</option>
+        <option value="trois">3</option>
+    </select>
+    <script>
+        var s = getVal(document.getElementById("ici"));
+
+        var p = document.createElement("p");
+        document.body.appendChild(p);
+
+        var texte = document.createTextNode("La liste déroulante ci-dessus à pour valeur ");
+        var em = document.createElement("em");
+        em.appendChild(document.createTextNode(s));
+        p.appendChild(texte);
+        p.appendChild(em);
+
+        em.style.fontWeight = "bold";
+
+        console.log(".innerHTML -> le contenu HTML à l'intérieur des balises de l'élément :", p.innerHTML);
+        console.log(".innerText(les autres) ou textContent(Firefox) -> uniquement le texte sans balises HTML contenu à l'intérieur des balises de l'élément :", (p.innerText || p.textContent));
+        console.log(".childNodes -> tous les noeuds HTML à l'intérieur de l'élément (le texte et le sauts de ligne sont considérés comme des noeuds) :", p.childNodes);
+        console.log(".children -> tous les éléments HTML contenus dans l'élément :", p.children);
+    </script>
+</body>
+</html>
