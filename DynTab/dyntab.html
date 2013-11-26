@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -74,118 +74,161 @@
                 font-weight: bold;
             }
     </style>
-    <script src="http://cdn.st.sncf.fr/jquery-1.10.2.min.js"></script>
+<!--    <script src="http://cdn.st.sncf.fr/jquery-1.10.2.min.js"></script>-->
     <script src="DynTable.js"></script>
     <!--<script src="DynTable.min.js"></script>-->
     <script>
         //GLOBAL POUR LE DEBUG
         var table = new DynTable();
 
-        $(document).ready(function ()
-        {
-            var g_dataComptes;
-            //LES COMPTES
-            $.ajax({
-                dataType: 'json',
-                url: 'http://x18srhrgcb7:8084/compte/full',
-                type: 'GET',
-                success: function (data, textStatus, jqXHR)
-                {
-                    g_dataComptes = data;
-                },
-                error: function (jqXHR, textStatus, errorThrown)
-                {
-                    console.warn("erreur :", arguments);
-                },
-                complete: function ()
-                {
-                    var datas = {
-                            header: [
-                                { value: "Compte", dataType: "text" },
-                                { value: "Description", dataType: "descr" },
-                                { value: "UOP", dataType: "bool" },
-                                { value: "actif", dataType: "bool" },
-                                { value: "ACTIM", dataType: "bool" },
-                                { value: "GRT", dataType: "bool" },
-                                { value: "GIENS", dataType: "bool" },
-                                { value: "Forfait", dataType: "text" },
-                                { value: "Unité", dataType: "ddl", values: [{ COMMUN: "COMMUN" }, { TELECOM: "TELECOM" }, { INFORMATIQUE: "INFORMATIQUE" }] }
-                            ],
-                            body: []
-                        },
-                        chrono = new Date().getTime();
+        //$(document).ready(function ()
+        //{
+        //var g_dataComptes;
+        ////LES COMPTES
+        //$.ajax({
+        //    dataType: 'json',
+        //    url: 'http://x18srhrgcb7:8084/compte/full',
+        //    type: 'GET',
+        //    success: function (data, textStatus, jqXHR)
+        //    {
+        //        g_dataComptes = data;
+        //    },
+        //    error: function (jqXHR, textStatus, errorThrown)
+        //    {
+        //        console.warn("erreur :", arguments);
+        //    },
+        //    complete: function ()
+        //    {
+        //        var datas = {
+        //                header: [
+        //                    { value: "Compte", dataType: "text" },
+        //                    { value: "Description", dataType: "descr" },
+        //                    { value: "UOP", dataType: "bool" },
+        //                    { value: "actif", dataType: "bool" },
+        //                    { value: "ACTIM", dataType: "bool" },
+        //                    { value: "GRT", dataType: "bool" },
+        //                    { value: "GIENS", dataType: "bool" },
+        //                    { value: "Forfait", dataType: "text" },
+        //                    { value: "Unité", dataType: "ddl", values: [{ COMMUN: "COMMUN" }, { TELECOM: "TELECOM" }, { INFORMATIQUE: "INFORMATIQUE" }] }
+        //                ],
+        //                body: []
+        //            },
+        //            chrono = new Date().getTime();
 
-                    for (var i in g_dataComptes) {
-                        datas.body.push([
-                            g_dataComptes[i].reference,
-                            g_dataComptes[i].libelle,
-                            g_dataComptes[i].UOP,
-                            g_dataComptes[i].actif,
-                            g_dataComptes[i].has_ACTIM,
-                            g_dataComptes[i].has_GRT,
-                            g_dataComptes[i].has_GIENS,
-                            g_dataComptes[i].forfait,
-                            g_dataComptes[i].unite
-                        ]);
-                    }
+        //        for (var i in g_dataComptes) {
+        //            datas.body.push([
+        //                g_dataComptes[i].reference,
+        //                g_dataComptes[i].libelle,
+        //                g_dataComptes[i].UOP,
+        //                g_dataComptes[i].actif,
+        //                g_dataComptes[i].has_ACTIM,
+        //                g_dataComptes[i].has_GRT,
+        //                g_dataComptes[i].has_GIENS,
+        //                g_dataComptes[i].forfait,
+        //                g_dataComptes[i].unite
+        //            ]);
+        //        }
 
-                    //TEST
-                    var s = document.createElement("select");
+        //        //TEST
+        //        var s = document.createElement("select");
                     
 
-                    if (table.Debug())
-                        console.log(new Date().getTime() - chrono + "ms pour construction des données");
+        //        if (table.Debug())
+        //            console.log(new Date().getTime() - chrono + "ms pour construction des données");
 
-                    table.setData(datas);
+        //        table.setData(datas);
 
-                    ////table.onLineAdd(function ()
-                    ////{
-                    ////    console.log("évenement personnalisé à l'ajout d'une ligne", arguments);
-                    ////});
+        //        ////table.onLineAdd(function ()
+        //        ////{
+        //        ////    console.log("évenement personnalisé à l'ajout d'une ligne", arguments);
+        //        ////});
 
-                    //table.onBeforeAdding(function ()
-                    //{
-                    //    console.log(arguments);
-                    //    return true;
-                    //});
+        //        //table.onBeforeAdding(function ()
+        //        //{
+        //        //    console.log(arguments);
+        //        //    return true;
+        //        //});
 
-                    ////table.onLineEdit(function ()
-                    ////{
-                    ////    console.log("évenement personnalisé à l'édition d'une ligne", arguments);
-                    ////});
+        //        ////table.onLineEdit(function ()
+        //        ////{
+        //        ////    console.log("évenement personnalisé à l'édition d'une ligne", arguments);
+        //        ////});
 
-                    //table.onBeforeUpdating(function ()
-                    //{
-                    //    return confirm("Mettre à jour cette ligne ?");
-                    //});
+        //        //table.onBeforeUpdating(function ()
+        //        //{
+        //        //    return confirm("Mettre à jour cette ligne ?");
+        //        //});
 
-                    //table.onBeforeDeleting(function ()
-                    //{
-                    //    return confirm("Êtes vous sûr de vouloir supprimer cette ligne?");
-                    //});
+        //        //table.onBeforeDeleting(function ()
+        //        //{
+        //        //    return confirm("Êtes vous sûr de vouloir supprimer cette ligne?");
+        //        //});
 
-                    table.getTableTo("ici");
+        //        table.getTableTo("ici");
 
-                    //DANS 5 SECONDES ON CHANGE LE JEUX DE DONNÉES
-                    window.setTimeout(function ()
-                    {
-                        console.log("changement de data");
-                        datas.body = [[1, "ligne de description numéro 1", 0,1,0,1,0, "générique", "COMMUN"], [2, "ligne de description numéro 2", 1,0,1,0,1,"générique", "INFORMATIQUE"]];
-                        table.setData(datas);
+        //        //DANS 5 SECONDES ON CHANGE LE JEUX DE DONNÉES
+        //        window.setTimeout(function ()
+        //        {
+        //            console.log("changement de data");
+        //            datas.body = [[1, "ligne de description numéro 1", 0,1,0,1,0, "générique", "COMMUN"], [2, "ligne de description numéro 2", 1,0,1,0,1,"générique", "INFORMATIQUE"]];
+        //            table.setData(datas);
 
-                        var table2 = new DynTable(datas);
-                        table2.getTableTo("ici2");
+        //            var table2 = new DynTable(datas);
+        //            table2.getTableTo("ici2");
 
-                        window.setTimeout(function ()
-                        {
-                            datas.body = [[2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE"], [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN"]];
+        //            window.setTimeout(function ()
+        //            {
+        //                datas.body = [[2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE"], [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN"]];
 
-                            table2.setData(datas);
-                        }, 1000);
-                    }, 5000);
-                }
+        //                table2.setData(datas);
+        //            }, 1000);
+        //        }, 5000);
+        //    }
+        //});
+        //});
+        window.onload = function () {
+                table.setData({
+                header: [
+                    { value: "little text", dataType: "text" },
+                    { value: "big text", dataType: "descr" },
+                    { value: "yes/no", dataType: "bool" },
+                    { value: "drop down list", dataType: "ddl", values: [{"value1":"value1"}, {"value2":"value2"}, {"defaultVal":"defaultVal"}, {"value3":"value3"}] },
+                    { value: "never display", dataType: "lineId" }
+                ],
+                body: [
+                    ["blablabla", "very big blablabla", 1, "defaultVal", "id1"],
+                    ["other text", "very VERY big blablabla...\nblablabla blablabla\nblablablablablabla\n\tblablabla", 0, "value3", "id2"]
+                ]
             });
-        });
+
+            table.onLineAdd(function ()
+            {
+                console.log("évenement personnalisé à l'ajout d'une ligne", arguments);
+            });
+
+            table.onBeforeAdding(function ()
+            {
+                console.log(arguments);
+                return true;
+            });
+
+            table.onLineEdit(function ()
+            {
+                console.log("évenement personnalisé à l'édition d'une ligne", arguments);
+            });
+
+            table.onBeforeUpdating(function ()
+            {
+                return confirm("Mettre à jour cette ligne ?");
+            });
+
+            table.onBeforeDeleting(function ()
+            {
+                return confirm("Êtes vous sûr de vouloir supprimer cette ligne?");
+            });
+
+            table.getTableTo("ici");
+        };
     </script>
 </head>
 <body>

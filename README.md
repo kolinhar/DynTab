@@ -10,7 +10,7 @@ Alimenté par un JSON de la forme:
 		{value: "little text", dataType: "text"},
 		{value: "big text", dataType: "descr"},
 		{value: "yes/no", dataType: "bool"},
-		{value: "drop down list", dataType: "ddl", values: ["value1", "value2", "defaultVal", "value3"]},
+		{value: "drop down list", dataType: "ddl", values: [{"value1": "value1"}, {"value2": "value2"}, {"defaultVal": "defaultVal"}, {"value3": "value3"}]},
 		{value: "never display", dataType: "lineId"}
 	],
 	body: [
