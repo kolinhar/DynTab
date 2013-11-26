@@ -11,10 +11,11 @@ Alimenté par un JSON de la forme:
 		{value: "big text", dataType: "descr"},
 		{value: "yes/no", dataType: "bool"},
 		{value: "drop down list", dataType: "ddl", values: ["value1", "value2", "defaultVal", "value3"]},
+		{value: "never display", dataType: "lineId"}
 	],
 	body: [
-		["blablabla", "very big blablabla", 1, "defaultVal"],
-		["other text", "very VERY big blablabla...", 0, "value3"]
+		["blablabla", "very big blablabla", 1, "defaultVal", "id1"],
+		["other text", "very VERY big blablabla...", 0, "value3", "id2"]
 	]
 }
 ```
