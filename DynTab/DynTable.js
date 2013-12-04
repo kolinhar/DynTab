@@ -20,6 +20,8 @@ var DynTable = function (objet)
 
     //LES ÉVENEMENTS
     var EVENT = {
+        //CLICK SUR UNE LIGNE
+        LineClick: Fct,
         //AJOUT D'UNE LIGNE
         LineAdd: Fct,
         //LIGNE AJOUTÉE
@@ -56,6 +58,8 @@ var DynTable = function (objet)
         COLS: 0,
         //NOMBRE DE LIGNES
         ROWS: 0,
+        //CLIQUER UNE LIGNE
+        CLIL: false,
         //AJOUTER DES LIGNES
         ADDL: { on: false, before: false },
         //EDITER DES LIGNES
@@ -96,6 +100,26 @@ var DynTable = function (objet)
         REGION EVENTS
     */
 
+    /*QUAND ON CLICK SUR UNE LIGNE
+    * @param {Function(e, elt)} handler : fonction éxecutée au click d'ajout d'une ligne
+    */
+    this.onLineClick = function (handler)
+    {
+        if (typeof handler !== TypeFct)
+            throw "this handler is not a function for onLineClick";
+
+        EVENT.LineClick = handler;
+        TABLE.CLIL = true;
+    };
+
+    /*ANNULE L'ÉCOUTE DE L'ÉVENEMENT ONLINECLICK
+    */
+    this.onLineClick.Stop = function ()
+    {
+        EVENT.LineClick = Fct;
+        TABLE.CLIL = false;
+    };
+
     /*QUAND UNE LIGNE EST AJOUTÉE
     * @param {Function(e, elt)} handler : fonction éxecutée au click d'ajout d'une ligne
     */
@@ -114,7 +138,7 @@ var DynTable = function (objet)
     {
         EVENT.LineAdd = Fct;
         TABLE.ADDL.on = false;
-    }
+    };
 
     /*AJOUTE UNE LIGNE EN ÉDITION AU TABLEAU
     * @param {Object} e : cible
@@ -189,7 +213,7 @@ var DynTable = function (objet)
                         td.innerHTML = _getVal(oldTr.childNodes[i]);
 
                         data.push(_getVal(oldTr.childNodes[i]));
-                    break;
+                        break;
                     case "bool":
                         var chkbx = _getElement("bool");
                         chkbx.checked = _getVal(oldTr.childNodes[i]);
@@ -198,28 +222,28 @@ var DynTable = function (objet)
                         td.align = "center";
 
                         data.push(~~_getVal(oldTr.childNodes[i]));
-                    break;
+                        break;
                     case "ddl":
                         var ddl = _getDdl(i, _getVal(oldTr.childNodes[i]));
                         ddl.disabled = true;
                         td.appendChild(ddl);
 
                         data.push(_getVal(oldTr.childNodes[i]));
-                    break;
+                        break;
                     case "lineId":
                         //ON AJOUTE L'IDENTIFIANT DE LIGNE
                         data.push(trIns.id);
-                    break;
+                        break;
                     default:
                         td.innerHTML = _getVal(oldTr.childNodes[i]);
 
                         data.push(_getVal(oldTr.childNodes[i]));
-                    break;
+                        break;
                 }
 
 
                 if (DATA.dataType[i] !== "lineId")
-                newTr.appendChild(td);
+                    newTr.appendChild(td);
             }
 
             console.log(data);
@@ -255,7 +279,7 @@ var DynTable = function (objet)
 
         //ON RETOURNE LA LIGNE INSÉRÉE
         return trIns;
-    }
+    };
 
     /*AVANT D'AJOUTER DÉFINITIVEMENT UNE LIGNE AU TABLEAU
     * @param {Function(e, elt) returns bool} handler : fonction éxecutée au click de confirmation de création d'une ligne
@@ -355,7 +379,7 @@ var DynTable = function (objet)
                         DATA.body[tr.rowIndex - 1][i] = _getVal(tr.children[i]);
 
                         l_cel.appendChild(document.createTextNode(DATA.body[tr.rowIndex - 1][i]));
-                    break;
+                        break;
                     case "bool":
                         DATA.body[tr.rowIndex - 1][i] = ~~_getVal(tr.children[i]);
 
@@ -365,7 +389,7 @@ var DynTable = function (objet)
 
                         l_cel.appendChild(chkbx);
                         l_cel.align = "center";
-                    break;
+                        break;
                     case "ddl":
                         DATA.body[tr.rowIndex - 1][i] = _getVal(tr.children[i]);
 
@@ -373,18 +397,18 @@ var DynTable = function (objet)
                         ddl.disabled = true;
 
                         l_cel.appendChild(ddl);
-                    break;
+                        break;
                     case "lineId":
                         //ON NE MODIFIE PAS L'IDENTIFIANT EXISTANT
-                    break;
+                        break;
                     default:
                         DATA.body[tr.rowIndex - 1][i] = _getVal(tr.children[i]);
 
                         l_cel.appendChild(document.createTextNode(DATA.body[tr.rowIndex - 1][i]));
-                    break;
+                        break;
                 }
 
-                if(DATA.dataType[i] !== "lineId")
+                if (DATA.dataType[i] !== "lineId")
                     tr.replaceChild(l_cel, tr.children[i]);
             }
 
@@ -407,25 +431,25 @@ var DynTable = function (objet)
                     case "text":
                     case "descr":
                         l_cel.innerHTML = DATA.body[tr.rowIndex - 1][i] || "";
-                    break;
+                        break;
                     case "bool":
                         var chkbx = _getElement("bool");
                         chkbx.checked = DATA.body[tr.rowIndex - 1][i];
                         chkbx.disabled = true;
                         l_cel.appendChild(chkbx);
                         l_cel.align = "center";
-                    break;
+                        break;
                     case "ddl":
                         var ddl = _getDdl(i, DATA.body[tr.rowIndex - 1][i]);
                         ddl.disabled = true;
                         l_cel.appendChild(ddl);
-                    break;
+                        break;
                     case "lineId":
                         //ON EN FAIT RIEN SI C'EST UN CHAMPS LINEID
-                    break;
+                        break;
                     default:
                         l_cel.innerHTML = DATA.body[tr.rowIndex - 1][i] || "";
-                    break;
+                        break;
                 }
 
                 //ONE NE REMPLACE L'ÉLÉMENT QUE SI CE N'EST PAS UN LINEID
@@ -695,40 +719,46 @@ var DynTable = function (objet)
                         case "text":
                         case "descr":
                             td.appendChild(document.createTextNode(DATA.body[i][j]));
-                        break;
+                            break;
                         case "bool":
                             var chkbx = _getElement("bool");
                             chkbx.checked = (DATA.body[i][j] === 1 ? true : false);
                             chkbx.disabled = true;
                             td.appendChild(chkbx);
                             td.align = "center";
-                        break;
+                            break;
                         case "ddl":
                             var ddl = _getDdl(j, DATA.body[i][j]);
                             ddl.disabled = true;
 
                             td.appendChild(ddl);
-                        break;
+                            break;
                         case "lineId":
                             //L'IDENTIFIANT DE LA LIGNE
                             tr.id = DATA.body[i][j];
-                        break;
+                            break;
                         default:
                             td.appendChild(document.createTextNode(DATA.body[i][j]));
-                        break;
+                            break;
                     }
                 }
                 else
                     td.innerHTML = "";
 
                 //ON AJOUTE UNE CELLULE UNIQUEMENT SI CE N'EST PAS UNE LINEID
-                if (DATA.dataType[j]!=="lineId")
+                if (DATA.dataType[j] !== "lineId")
                     tr.appendChild(td);
             }
 
             //AJOUT DES BOUTONS
             if (TABLE.ADDL.on || TABLE.UPDL.on || TABLE.DELL.on || TABLE.ADDL.before || TABLE.UPDL.before || TABLE.DELL.before)
                 tr.appendChild(_getButtons());
+
+            if (TABLE.CLIL)
+                tr.addEventListener("click", function (e)
+                {
+                    EVENT.LineClick(e, e.target.parentElement);
+                });
 
             tBody.appendChild(tr);
         }
