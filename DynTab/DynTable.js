@@ -12,7 +12,8 @@ var DynTable = function (objet)
     //L'ÉLÉMENT CONTENANT LE TABLEAU
     var CIBLE = null;
 
-    var Fct = function () { }, Obj = {},
+    var Fct = function () {},
+        Obj = {},
         TypeFct = typeof Fct,
         TypeObj = typeof Obj,
         FctTrue = function () { return true },
@@ -21,21 +22,21 @@ var DynTable = function (objet)
     //LES ÉVENEMENTS
     var EVENT = {
         //CLICK SUR UNE LIGNE
-        LineClick: Fct,
+        LineClick: undefined,
         //AJOUT D'UNE LIGNE
-        LineAdd: Fct,
+        LineAdd: undefined,
         //LIGNE AJOUTÉE
         LineAdding: false,
         //AVANT L'AJOUT DÉFINITIF D'UNE LIGNE
         BeforeAdding: FctTrue,
         //MODIFICATION D'UNE LIGNE
-        LineEdit: Fct,
+        LineEdit: undefined,
         //ÉDITION D'UNE LIGNE,
         LineEditing: false,
         //AVANT LA MISE À JOUR D'UNE LIGNE
         BeforeUpdating: FctTrue,
         //SUPPRESSSION D'UNE LIGNE
-        LineDelete: Fct,
+        LineDelete: undefined,
         //AVANT LA SUPPRESSION D'UNE LIGNE
         BeforeDeleting: FctTrue,
         //LIGNE EXISTANTE SUPPRIMÉE
@@ -54,6 +55,8 @@ var DynTable = function (objet)
 
     //INFOS RELATIVES AU TABLEAU                
     var TABLE = {
+        //IDENTIFIANT DE LA TABLE
+        ID: "DynTable" + _selfObj.id,
         //NOMBRE DE COLONNES
         COLS: 0,
         //NOMBRE DE LIGNES
@@ -72,8 +75,11 @@ var DynTable = function (objet)
         ISINIT: false
     };
 
-    //DEBUG
-    //SI ON EST SUR IE PAR DÉFAUT ON EST PAS EN DEBUG (PB AVEC LA CONSOLE)
+    /*DEBUG
+    * SI ON EST SUR IE PAR DÉFAUT ON EST PAS EN DEBUG (PB AVEC LA CONSOLE)
+    * oui je sais : c'est de la discrimination pour les IE récents, 
+    * mais quand on t'as contraint à coder pour IE8... tu vois la vie différemment
+    */
     var _DEBUG = (navigator.appName === "Microsoft Internet Explorer" ? false : location.hostname === "localhost");
     //INDIQUE SI ON EST EN DEBUG
     this.Debug = function ()
@@ -116,7 +122,7 @@ var DynTable = function (objet)
     */
     this.onLineClick.Stop = function ()
     {
-        EVENT.LineClick = Fct;
+        EVENT.LineClick = undefined;
         TABLE.CLIL = false;
     };
 
@@ -136,7 +142,7 @@ var DynTable = function (objet)
     */
     this.onLineAdd.Stop = function ()
     {
-        EVENT.LineAdd = Fct;
+        EVENT.LineAdd = undefined;
         TABLE.ADDL.on = false;
     };
 
@@ -317,7 +323,7 @@ var DynTable = function (objet)
     */
     this.onLineEdit.Stop = function ()
     {
-        EVENT.LineEdit = Fct;
+        EVENT.LineEdit = undefined;
         TABLE.UPDL.on = false;
     }
 
@@ -506,7 +512,7 @@ var DynTable = function (objet)
     */
     this.onLineDelete.Stop = function ()
     {
-        EVENT.LineDelete = Fct;
+        EVENT.LineDelete = undefined;
         TABLE.DELL.on = false;
     };
 
@@ -658,10 +664,8 @@ var DynTable = function (objet)
         * Résultats complètement différents sur 
         * http://jsperf.com/string-vs-array-vs-js
         */
-        var chrono = Date.now();
-
         var TabHTML = document.createElement("table");
-        TabHTML.id = "DynTable" + _selfObj.id;
+        TabHTML.id = TABLE.ID;
         TabHTML.className = "dyntab-table";
 
         //ENTÊTE DU TABLEAU
@@ -692,7 +696,7 @@ var DynTable = function (objet)
 
         //POUR PLUS TARD ;-)
         //TabHTML.createTBody()
-        //TabHTML.tBodies[0].app
+        //TabHTML.tBodies[0].appendChild(...);
 
         //CORPS DU TABLEAU
         var tBody = document.createElement("tbody");
@@ -754,10 +758,11 @@ var DynTable = function (objet)
             if (TABLE.ADDL.on || TABLE.UPDL.on || TABLE.DELL.on || TABLE.ADDL.before || TABLE.UPDL.before || TABLE.DELL.before)
                 tr.appendChild(_getButtons());
 
+            //AJOUT DU CLICK SUR LA LIGNE
             if (TABLE.CLIL)
                 tr.addEventListener("click", function (e)
                 {
-                    EVENT.LineClick(e, e.target.parentElement);
+                    EVENT.LineClick && EVENT.LineClick(e, e.target.parentElement);
                 });
 
             tBody.appendChild(tr);
@@ -768,10 +773,6 @@ var DynTable = function (objet)
 
         TabHTML.appendChild(tBody);
 
-        //AFFICHAGE DE STATS
-        if (_DEBUG)
-            console.log(Date.now() - chrono + "ms pour création tableau " + TABLE.COLS + "x" + TABLE.ROWS);
-
         return TabHTML;
     }
 
@@ -780,7 +781,6 @@ var DynTable = function (objet)
     */
     var _getButtons = function ()
     {
-
         if (TABLE.ADDL.on || TABLE.UPDL.on || TABLE.DELL.on || TABLE.ADDL.before || TABLE.UPDL.before || TABLE.DELL.before) {
 
             var td = document.createElement("td");
@@ -804,7 +804,7 @@ var DynTable = function (objet)
                     //ÉVENEMENT INTRINSÈQUE
                     EVENT.LineAdding = true;
                     //ÉVENEMENT PERSONNALISÉ EN DERNIER
-                    EVENT.LineAdd(e, elt);
+                    EVENT.LineAdd && EVENT.LineAdd(e, elt);
                 });
                 td.appendChild(button)
             }
@@ -827,7 +827,7 @@ var DynTable = function (objet)
                     //ÉVENEMENT INTRINSÈQUE
                     EVENT.LineEditing = true;
                     //ÉVENEMENT PERSONNALISÉ EN DERNIER
-                    EVENT.LineEdit(e, elt);
+                    EVENT.LineEdit && EVENT.LineEdit(e, elt);
                 });
                 td.appendChild(button)
             }
@@ -844,7 +844,7 @@ var DynTable = function (objet)
                     //ÉVENEMENT INTRINSÈQUE
                     EVENT.LineDeleted = true;
                     //ÉVENEMENT PERSONNALISÉ EN DERNIER
-                    EVENT.LineDelete(e, elt);
+                    EVENT.LineDelete && EVENT.LineDelete(e, elt);
                 });
                 td.appendChild(button)
             }
