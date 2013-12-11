@@ -183,6 +183,8 @@ var DynTable = function (objet)
         buttonDel.title = "Annuler la saisie"
         buttonDel.addEventListener("click", function (e)
         {
+            //EMPÊCHE L'ÉVENEMENT DE REMONTER ET DE DÉCLENCHER ONLINECLICK
+            e.stopPropagation();
             //SUPPRESSION DE LA LIGNE
             var tr = e.target.parentNode.parentNode,
                 tbody = tr.parentNode;
@@ -199,6 +201,8 @@ var DynTable = function (objet)
         buttonVal.title = "Valider la saisie";
         buttonVal.addEventListener("click", function (e)
         {
+            //EMPÊCHE L'ÉVENEMENT DE REMONTER ET DE DÉCLENCHER ONLINECLICK
+            e.stopPropagation();
             //DEMANDE DE CONFIRMATION
             if (!EVENT.BeforeAdding(e, trIns))
                 return;
@@ -240,6 +244,11 @@ var DynTable = function (objet)
                         //ON AJOUTE L'IDENTIFIANT DE LIGNE
                         data.push(trIns.id);
                         break;
+                    case "html":
+                        td.innerHTML = oldTr.childNodes[i].innerHTML;
+
+                        data.push(oldTr.childNodes[i].innerHTML);
+                    break;
                     default:
                         td.innerHTML = _getVal(oldTr.childNodes[i]);
 
@@ -252,7 +261,8 @@ var DynTable = function (objet)
                     newTr.appendChild(td);
             }
 
-            console.log(data);
+            if (_DEBUG)
+                console.log(data);
 
             //ENREGISTREMENT DES DONNÉES
             DATA.body.splice(trIns.rowIndex - 1, 0, data);
@@ -367,8 +377,10 @@ var DynTable = function (objet)
         var oldButtons = tr.replaceChild(newButtons, tr.lastChild);
 
         //ENREGISTREMENT DE LA SAISIE
-        btn1.addEventListener("click", function ()
+        btn1.addEventListener("click", function (e)
         {
+            //EMPÊCHE L'ÉVENEMENT DE REMONTER ET DE DÉCLENCHER ONLINECLICK
+            e.stopPropagation();
             //DEMANDE DE CONFIRMATION
             if (!EVENT.BeforeUpdating(e, tr))
                 return;
@@ -407,6 +419,12 @@ var DynTable = function (objet)
                     case "lineId":
                         //ON NE MODIFIE PAS L'IDENTIFIANT EXISTANT
                         break;
+                    case "html":
+                        //PAS DE MODIFICATION POUR LE MOMENT
+                        DATA.body[tr.rowIndex - 1][i] = tr.children[i].innerHTML;
+
+                        l_cel.innerHTML = DATA.body[tr.rowIndex - 1][i];
+                    break;
                     default:
                         DATA.body[tr.rowIndex - 1][i] = _getVal(tr.children[i]);
 
@@ -425,8 +443,11 @@ var DynTable = function (objet)
         });
 
         //ANNULATION DE LA SAISIE
-        btn2.addEventListener("click", function ()
+        btn2.addEventListener("click", function (e)
         {
+            //EMPÊCHE L'ÉVENEMENT DE REMONTER ET DE DÉCLENCHER ONLINECLICK
+            e.stopPropagation();
+
             tr.classList.remove("dyntab-selected");
 
             for (var i = 0; i < DATA.dataType.length; i++) {
@@ -723,27 +744,30 @@ var DynTable = function (objet)
                         case "text":
                         case "descr":
                             td.appendChild(document.createTextNode(DATA.body[i][j]));
-                            break;
+                        break;
                         case "bool":
                             var chkbx = _getElement("bool");
                             chkbx.checked = (DATA.body[i][j] === 1 ? true : false);
                             chkbx.disabled = true;
                             td.appendChild(chkbx);
                             td.align = "center";
-                            break;
+                        break;
                         case "ddl":
                             var ddl = _getDdl(j, DATA.body[i][j]);
                             ddl.disabled = true;
 
                             td.appendChild(ddl);
-                            break;
+                        break;
                         case "lineId":
                             //L'IDENTIFIANT DE LA LIGNE
                             tr.id = DATA.body[i][j];
-                            break;
+                        break;
+                        case "html":
+                            td.innerHTML = DATA.body[i][j];
+                        break;
                         default:
                             td.appendChild(document.createTextNode(DATA.body[i][j]));
-                            break;
+                        break;
                     }
                 }
                 else
@@ -763,7 +787,7 @@ var DynTable = function (objet)
                 tr.addEventListener("click", function (e)
                 {
                     EVENT.LineClick && EVENT.LineClick(e, e.target.parentElement);
-                });
+                }, false);
 
             tBody.appendChild(tr);
         }
@@ -793,6 +817,8 @@ var DynTable = function (objet)
                 button.title = "Ajouter une ligne au-dessus"
                 button.addEventListener("click", function (e)
                 {
+                    //EMPÊCHE L'ÉVENEMENT DE REMONTER ET DE DÉCLENCHER ONLINECLICK
+                    e.stopPropagation();
                     //SI UNE LIGNE EST DÉJÀ EN ÉDITION, ON EMPÊCHE LA MULTI CRÉATION/ÉDITION
                     if (EVENT.LineAdding || EVENT.LineEditing) {
                         alert("Une ligne est déjà en édition.\nVeuillez la valider avant de modifier ou d'ajouter une nouvelle ligne.");
@@ -816,6 +842,8 @@ var DynTable = function (objet)
                 button.title = "Modifier cette ligne";
                 button.addEventListener("click", function (e)
                 {
+                    //EMPÊCHE L'ÉVENEMENT DE REMONTER ET DE DÉCLENCHER ONLINECLICK
+                    e.stopPropagation();
                     //SI UNE LIGNE EST DÉJÀ EN ÉDITION, ON EMPÊCHE LA MULTI CRÉATION/ÉDITION
                     if (EVENT.LineAdding || EVENT.LineEditing) {
                         alert("Une ligne est déjà en édition.\nVeuillez la valider avant de modifier ou d'ajouter une nouvelle ligne.");
@@ -839,6 +867,8 @@ var DynTable = function (objet)
                 button.title = "Supprimer cette ligne";
                 button.addEventListener("click", function (e)
                 {
+                    //EMPÊCHE L'ÉVENEMENT DE REMONTER ET DE DÉCLENCHER ONLINECLICK
+                    e.stopPropagation();
                     //SUPPRESSION DE LA LIGNE
                     var elt = LineDel(e);
                     //ÉVENEMENT INTRINSÈQUE
@@ -878,6 +908,7 @@ var DynTable = function (objet)
 
     /*RETOURNE L'ÉLÉMENT HTML CORRESPONDANT AU PRAMÈTRE
     * @param {String} descr : le type de champs
+    * @param {Element} node : l'élément
     * @returns {Element} : élément HTML
     */
     var _getElement = function (descr, node)
@@ -889,17 +920,17 @@ var DynTable = function (objet)
                 elt = document.createElement("input");
                 elt.setAttribute("type", "text");
                 elt.value = _getVal(node);
-                break;
+            break;
             case "descr":
                 elt = document.createElement("textarea");
                 elt.style.width = "100%";
                 elt.value = _getVal(node);
-                break;
+            break;
             case "bool":
                 elt = document.createElement("input");
                 elt.setAttribute("type", "checkbox");
                 elt.checked = _getVal(node);
-                break;
+            break;
             case "ddl":
                 elt = document.createElement("select");
                 //SI ON TROUVE UN SELECT ON LE GARDE TEL QU'IL EST
@@ -907,7 +938,17 @@ var DynTable = function (objet)
                     elt = node.firstChild;
                     elt.disabled = false;
                 }
-                break;
+            break;
+            case "html":
+                if (node && node.firstChild) {
+                    elt = node.firstChild.cloneNode(true);
+                }
+                else {
+                    elt = document.createTextNode("");
+                }
+
+                //elt = (node ? (node.firstChild ? node.firstChild.cloneNode(true) : node.cloneNode(true)) : document.createTextNode(""));
+            break;
             default:
                 elt = document.createElement("input");
                 elt.setAttribute("type", "text");
