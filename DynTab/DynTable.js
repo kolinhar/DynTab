@@ -589,7 +589,7 @@ var DynTable = function (objet)
     {
         //VÉRIF DU TYPE
         if (typeof obj !== TypeObj) {
-            if (DEBUG)
+            if (_DEBUG)
                 console.log(obj, "is not an Object");
 
             throw "Argument is not an Object";
@@ -598,7 +598,7 @@ var DynTable = function (objet)
         //VÉRIF DU MODELE
         for (var i in DataModele) {
             if (obj[i] === undefined) {
-                if (DEBUG)
+                if (_DEBUG)
                     console.log(obj, "isn't look like the expected model", DataModele);
                 throw "Object isn't look like the expected model";
             }
