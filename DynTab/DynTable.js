@@ -611,6 +611,11 @@ var DynTable = function (objet)
             DATA.values = [];
             DATA.body = [];
         }
+        
+        //RÉINITIALISATION DES ÉVENEMENTS
+        EVENT.LineAdding = false,
+        EVENT.LineEditing = false,
+        EVENT.LineDeleted = false;
 
         //ON APPLIQUE UNIQUEMENT CE DONT ON A BESOIN POUR LE TABLEAU
         //EN-TETES
