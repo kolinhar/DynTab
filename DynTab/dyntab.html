@@ -1,6 +1,21 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16" />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>test de tableau dynamique</title>
@@ -10,7 +25,7 @@
             -webkit-box-sizing: border-box;
             box-sizing: border-box;
         }
-        .paire {
+        /*.paire {
             background-color: #CCC;
         }
         .impaire {
@@ -21,7 +36,7 @@
             }
         .new {
             background-color: #d8facb;
-        }
+        }*/
 
         table {
             /*empty-cells: hide;*/
@@ -76,7 +91,6 @@
     </style>
     <script src="http://cdn.st.sncf.fr/jquery-1.10.2.min.js"></script>
     <script src="DynTable.js"></script>
-    <!--<script src="DynTable.min.js"></script>-->
     <script>
         //GLOBAL POUR LE DEBUG
         var table = new DynTable();
@@ -164,24 +178,36 @@
                     return confirm("Êtes vous sûr de vouloir supprimer cette ligne?");
                 });
 
+                table.onDataLoad(function (data)
+                {
+                    console.info("évenement personalisé onDataLoad");
+                    console.table(data);
+                });
+
                 table.getTableTo("ici");
 
                 //DANS 5 SECONDES ON CHANGE LE JEUX DE DONNÉES
                 window.setTimeout(function ()
                 {
                     console.log("changement de data");
-                    datas.body = [[1, "ligne de description numéro 1", 0,1,0,1,0, "générique", "COMMUN"], [2, "ligne de description numéro 2", 1,0,1,0,1,"générique", "INFORMATIQUE"]];
+                    datas.header.push({value : "id", dataType: "lineId"})
+                    datas.body = [
+                        [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN", "id1"],
+                        [2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE", "id2"],
+                        [2, "ligne de description numéro 3", 0, 1, 0, 0, 0, "générique", "COMMUN", "id3"],
+                        [4, "ligne de description numéro 4", 1, 1, 1, 1, 1, "générique", "TELECOM", "id4"]
+                    ];
                     table.setData(datas);
 
-                    var table2 = new DynTable(datas);
-                    table2.getTableTo("ici2");
+                    //var table2 = new DynTable(datas);
+                    //table2.getTableTo("ici2");
 
-                    window.setTimeout(function ()
-                    {
-                        datas.body = [[2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE"], [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN"]];
+                    //window.setTimeout(function ()
+                    //{
+                    //    datas.body = [[2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE"], [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN"]];
 
-                        table2.setData(datas);
-                    }, 1000);
+                    //    table2.setData(datas);
+                    //}, 1000);
                 }, 5000);
             }
         });
