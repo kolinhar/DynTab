@@ -40,7 +40,11 @@ var DynTable = function (objet)
         //AVANT LA SUPPRESSION D'UNE LIGNE
         BeforeDeleting: FctTrue,
         //LIGNE EXISTANTE SUPPRIMÉE
-        LineDeleted: false
+        LineDeleted: false,
+        //INSERTION DE DONNÉES
+        DataLoad : undefined,
+        //DONNÉES AJOUTÉES
+        DataLoading: false
     };
 
     //MODELE DE DONNÉES ATTENDU
@@ -69,6 +73,8 @@ var DynTable = function (objet)
         UPDL: { on: false, before: false },
         //SUPPRIMER DES LIGNES
         DELL: { on: false, before: false },
+        //MODIFIER LES DONNÉES
+        LOAD: false,
         //PAGINATION
         PAGIN: 30,
         //INITIALISÉ
@@ -577,6 +583,26 @@ var DynTable = function (objet)
         TABLE.DELL.before = false;
     };
 
+    /*QUAND UN JEU DE DONNÉES EST INSERÉ DANS LE TABLEAU EN PLACE
+    * @param {Function(data)} handler : fonction éxecutée au chargement des données
+    */
+    this.onDataLoad = function (handler)
+    {
+        if (typeof handler !== TypeFct)
+            throw "this handler is not a function for onDataLoad";
+
+        EVENT.DataLoad = handler;
+        TABLE.LOAD = true;
+
+    };
+
+    /*ANNULE L'ÉCOUTE DE L'ÉVENEMENT ONDATALOAD
+    */
+    this.onDataLoad.Stop = function ()
+    {
+        EVENT.DataLoad = undefined;
+        TABLE.LOAD = false;
+    };
     /*
         REGION EVENTS
     **********************/
@@ -605,7 +631,7 @@ var DynTable = function (objet)
         }
 
         //SI ON MODIFIE LES DONNÉES EN COURS D'INSTANCE, ON REDESSINE LE TABLEAU
-        if (TABLE.ISINIT === true) {
+        if (TABLE.ISINIT) {
             DATA.header = [];
             DATA.dataType = [];
             DATA.values = [];
@@ -658,11 +684,15 @@ var DynTable = function (objet)
         if (obj.delLines !== undefined)
             TABLE.DELL.on = obj.delLines;
 
-        //SI ON MODIFIE LES DONNÉES EN COURS D'INSTANCE, ON REDESSINE COMPLÈTEMENT LE TABLEAU
-        if (TABLE.ISINIT === true) {
+        //SI ON MODIFIE LES DONNÉES EN COURS D'INSTANCE
+        if (TABLE.ISINIT) {
             objet = obj;
+            //ON REDESSINE COMPLÈTEMENT LE TABLEAU
             CIBLE.removeChild(document.getElementById("DynTable" + this.id));
             CIBLE.appendChild(_draw());
+            //ÉVENEMENT D'AJOUT DE DONNÉES
+            EVENT.DataLoad && EVENT.DataLoad(DATA);
+            TABLE.LOAD = true;
         }
     }
 
@@ -791,7 +821,13 @@ var DynTable = function (objet)
             if (TABLE.CLIL)
                 tr.addEventListener("click", function (e)
                 {
-                    EVENT.LineClick && EVENT.LineClick(e, e.target.parentElement);
+                    var cible = e.target;
+
+                    while (cible.tagName !== "TR") {
+                        cible = cible.parentElement;
+                    }
+
+                    EVENT.LineClick && EVENT.LineClick(e, cible);
                 }, false);
 
             tBody.appendChild(tr);
