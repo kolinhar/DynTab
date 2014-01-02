@@ -821,7 +821,13 @@ var DynTable = function (objet)
             if (TABLE.CLIL)
                 tr.addEventListener("click", function (e)
                 {
-                    EVENT.LineClick && EVENT.LineClick(e, e.target.parentElement);
+                    var cible = e.target;
+
+                    while (cible.tagName !== "TR") {
+                        cible = cible.parentElement;
+                    }
+
+                    EVENT.LineClick && EVENT.LineClick(e, cible);
                 }, false);
 
             tBody.appendChild(tr);
