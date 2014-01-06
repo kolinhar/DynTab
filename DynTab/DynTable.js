@@ -939,6 +939,22 @@ var DynTable = function (objet)
         }
     };
 
+    /*RESTITUE LE TABLEAU EN HTML
+    * @returns {Element}
+    */
+    this.getTable = function ()
+    {
+        var ret;
+
+        if (TABLE.ISINIT)
+            ret = document.getElementById(CIBLE).innerHTML;
+        else
+            ret = _draw();
+        
+        return ret;
+    };
+
+
     /*retourne le jeu de données utilisé par l'instance
     * @returns {Object}
     */
