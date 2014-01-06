@@ -16,7 +16,8 @@ Alimenté par un JSON de la forme:
 	],
 	body: [
 		["blablabla", "very big blablabla", 1, "defaultVal", "<input type='button' value='test' />", "id1"],
-		["other text", "very VERY big blablabla...", 0, "value3", "<hr />", "id2"]
+		["other text", "very VERY big blablabla...", 0, "value3", "<hr />", "id2"],
+		["some text", "text text text", 1, "value2", document.createElement("textarea"), "id3"]
 	]
 }
 ```
