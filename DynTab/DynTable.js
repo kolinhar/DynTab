@@ -798,7 +798,16 @@ var DynTable = function (objet)
                             tr.id = DATA.body[i][j];
                         break;
                         case "html":
-                            td.innerHTML = DATA.body[i][j];
+                            switch (typeof DATA.body[i][j]) {
+                                case "string":
+                                    td.innerHTML = DATA.body[i][j];
+                                break;
+                                case "object":
+                                    td.appendChild(DATA.body[i][j]);
+                                break;
+                                default:
+                                    td.appendChild(document.createTextNode(DATA.body[i][j]));
+                            }
                         break;
                         default:
                             td.appendChild(document.createTextNode(DATA.body[i][j]));
