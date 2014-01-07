@@ -845,6 +845,47 @@ var DynTable = function (objet)
         ////PAGINATION
         //tBody.appendChild(_getPagination());
 
+        //SI PAS DE LIGNE ET QUE L'AJOUT EST PERMIS
+        if ((TABLE.ADDL.on || TABLE.ADDL.before) && TABLE.ROWS === 0) {
+            //AJOUT DE L'ENTÊTE ACTIONS
+            var thPlus = document.createElement("th");
+            thPlus.innerHTML = "Actions"
+            thPlus.classList.add("dyntab-actions");
+            TabHTML.tHead.firstChild.appendChild(thPlus);
+
+            //ON AJOUTE UN BOUTON D'AJOUT DE LIGNE
+            var trPlus = document.createElement("tr"),
+                tdPlus = document.createElement("td"),
+                tdAct = document.createElement("td"),
+                button = document.createElement("button");
+
+            button.innerHTML = "+";
+            button.title = "Ajouter une ligne au-dessus"
+            button.addEventListener("click", function (e)
+            {
+                //EMPÊCHE L'ÉVENEMENT DE REMONTER ET DE DÉCLENCHER ONLINECLICK
+                e.stopPropagation();
+                //CRÉATION DE LA NOUVELLE LIGNE
+                var elt = LineAdd(e);
+                //ÉVENEMENT INTRINSÈQUE
+                EVENT.LineAdding = true;
+                //ÉVENEMENT PERSONNALISÉ EN DERNIER
+                EVENT.LineAdd && EVENT.LineAdd(e, elt);
+                //SUPPRESSION DE LA LIGNE
+                TabHTML.tBodies[0].removeChild(e.target.parentElement.parentElement);
+            });
+
+
+            tdPlus.setAttribute("colspan", TABLE.COLS.toString());
+            tdPlus.appendChild(document.createTextNode(""));
+
+            tdAct.appendChild(button);
+
+            trPlus.appendChild(tdPlus);
+            trPlus.appendChild(tdAct);
+            tBody.appendChild(trPlus);
+        }
+
         TabHTML.appendChild(tBody);
 
         return TabHTML;
