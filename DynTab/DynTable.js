@@ -200,6 +200,8 @@ var DynTable = function (objet)
 
             if (trPrev)
                 location.replace(location.pathname + "#" + trPrev.id);
+
+            _getButtonPlus(document.getElementById(TABLE.ID));
         });
 
         //VALIDE L'AJOUT DE LA LIGNE
@@ -212,6 +214,8 @@ var DynTable = function (objet)
             //DEMANDE DE CONFIRMATION
             if (!EVENT.BeforeAdding(e, trIns))
                 return;
+
+            TABLE.ROWS++;
 
             //MISE À JOUR DU TABLEAU
             var oldTr = trIns,
@@ -559,6 +563,11 @@ var DynTable = function (objet)
         //ON SUPPRIME LA LIGNE CORRESPONDANTE DANS LE TABLEAU DE DONNÉES
         DATA.body.splice(tr.rowIndex - 1, 1);
 
+        TABLE.ROWS--;
+
+        //BOUTON ADD
+        _getButtonPlus(tbody.parentElement);
+
         //ON SUPPRIME AUSSI LA LIGNE DANS LE TABLEAU ET ON LA  RETOURNE
         return tbody.removeChild(tr);
     };
@@ -845,48 +854,9 @@ var DynTable = function (objet)
         ////PAGINATION
         //tBody.appendChild(_getPagination());
 
-        //SI PAS DE LIGNE ET QUE L'AJOUT EST PERMIS
-        if ((TABLE.ADDL.on || TABLE.ADDL.before) && TABLE.ROWS === 0) {
-            //AJOUT DE L'ENTÊTE ACTIONS
-            var thPlus = document.createElement("th");
-            thPlus.innerHTML = "Actions"
-            thPlus.classList.add("dyntab-actions");
-            TabHTML.tHead.firstChild.appendChild(thPlus);
-
-            //ON AJOUTE UN BOUTON D'AJOUT DE LIGNE
-            var trPlus = document.createElement("tr"),
-                tdPlus = document.createElement("td"),
-                tdAct = document.createElement("td"),
-                button = document.createElement("button");
-
-            button.innerHTML = "+";
-            button.title = "Ajouter une ligne au-dessus"
-            button.addEventListener("click", function (e)
-            {
-                //EMPÊCHE L'ÉVENEMENT DE REMONTER ET DE DÉCLENCHER ONLINECLICK
-                e.stopPropagation();
-                //CRÉATION DE LA NOUVELLE LIGNE
-                var elt = LineAdd(e);
-                //ÉVENEMENT INTRINSÈQUE
-                EVENT.LineAdding = true;
-                //ÉVENEMENT PERSONNALISÉ EN DERNIER
-                EVENT.LineAdd && EVENT.LineAdd(e, elt);
-                //SUPPRESSION DE LA LIGNE
-                TabHTML.tBodies[0].removeChild(e.target.parentElement.parentElement);
-            });
-
-
-            tdPlus.setAttribute("colspan", TABLE.COLS.toString());
-            tdPlus.appendChild(document.createTextNode(""));
-
-            tdAct.appendChild(button);
-
-            trPlus.appendChild(tdPlus);
-            trPlus.appendChild(tdAct);
-            tBody.appendChild(trPlus);
-        }
-
         TabHTML.appendChild(tBody);
+
+        _getButtonPlus(TabHTML);
 
         return TabHTML;
     }
@@ -1202,6 +1172,56 @@ var DynTable = function (objet)
 
         return Math.random().toString().split(".")[1] + new Date().getTime();
     };
+
+    /*AJOUTE UNE LIGNE SUPPLÉMENTAIRE POUR AJOUTER LA PREMIÈRE LIGNE
+    * @param {Element} table : le tableau
+    */
+    var _getButtonPlus = function (table)
+    {
+        console.log("TABLE.ROWS =", TABLE.ROWS);
+
+        //SI PAS DE LIGNE ET QUE L'AJOUT EST PERMIS
+        if ((TABLE.ADDL.on || TABLE.ADDL.before) && TABLE.ROWS === 0) {
+            //AJOUT DE L'ENTÊTE ACTIONS SI IL N'EST PAS DÉJÀ PRÉSENT
+            if (table.tHead.firstChild.children.length === TABLE.COLS) {
+                var thPlus = document.createElement("th");
+                thPlus.innerHTML = "Actions"
+                thPlus.classList.add("dyntab-actions");
+                table.tHead.firstChild.appendChild(thPlus);
+            }
+
+            //ON AJOUTE UN BOUTON D'AJOUT DE LIGNE
+            var trPlus = document.createElement("tr"),
+                tdPlus = document.createElement("td"),
+                tdAct = document.createElement("td"),
+                button = document.createElement("button");
+
+            button.innerHTML = "+";
+            button.title = "Ajouter une ligne au-dessus"
+            button.addEventListener("click", function (e)
+            {
+                //EMPÊCHE L'ÉVENEMENT DE REMONTER ET DE DÉCLENCHER ONLINECLICK
+                e.stopPropagation();
+                //CRÉATION DE LA NOUVELLE LIGNE
+                var elt = LineAdd(e);
+                //ÉVENEMENT INTRINSÈQUE
+                EVENT.LineAdding = true;
+                //ÉVENEMENT PERSONNALISÉ EN DERNIER
+                EVENT.LineAdd && EVENT.LineAdd(e, elt);
+                //SUPPRESSION DE LA LIGNE
+                table.tBodies[0].removeChild(e.target.parentElement.parentElement);
+            });
+            
+            tdPlus.setAttribute("colspan", TABLE.COLS);
+            tdPlus.appendChild(document.createTextNode(""));
+
+            tdAct.appendChild(button);
+
+            trPlus.appendChild(tdPlus);
+            trPlus.appendChild(tdAct);
+            table.tBodies[0].appendChild(trPlus);
+        }
+    }
 
     /*
     * @CTOR
