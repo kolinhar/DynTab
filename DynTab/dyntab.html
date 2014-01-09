@@ -190,31 +190,33 @@
                     console.table(data);
                 });
 
+                table.Href(false);
+
                 table.getTableTo("ici");
 
-                //DANS 5 SECONDES ON CHANGE LE JEUX DE DONNÉES
-                window.setTimeout(function ()
-                {
-                    console.log("changement de data");
-                    datas.header.push({value : "id", dataType: "lineId"})
-                    datas.body = [
-                        [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN", "id1"],
-                        [2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE", "id2"],
-                        [2, "ligne de description numéro 3", 0, 1, 0, 0, 0, "générique", "COMMUN", "id3"],
-                        [4, "ligne de description numéro 4", 1, 1, 1, 1, 1, "générique", "TELECOM", "id4"]
-                    ];
-                    table.setData(datas);
+                ////DANS 5 SECONDES ON CHANGE LE JEUX DE DONNÉES
+                //window.setTimeout(function ()
+                //{
+                //    console.log("changement de data");
+                //    datas.header.push({value : "id", dataType: "lineId"})
+                //    datas.body = [
+                //        [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN", "id1"],
+                //        [2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE", "id2"],
+                //        [2, "ligne de description numéro 3", 0, 1, 0, 0, 0, "générique", "COMMUN", "id3"],
+                //        [4, "ligne de description numéro 4", 1, 1, 1, 1, 1, "générique", "TELECOM", "id4"]
+                //    ];
+                //    table.setData(datas);
 
-                    //var table2 = new DynTable(datas);
-                    //table2.getTableTo("ici2");
+                //    //var table2 = new DynTable(datas);
+                //    //table2.getTableTo("ici2");
 
-                    //window.setTimeout(function ()
-                    //{
-                    //    datas.body = [[2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE"], [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN"]];
+                //    //window.setTimeout(function ()
+                //    //{
+                //    //    datas.body = [[2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE"], [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN"]];
 
-                    //    table2.setData(datas);
-                    //}, 1000);
-                }, 500);
+                //    //    table2.setData(datas);
+                //    //}, 1000);
+                //}, 500);
             }
         });
         });
