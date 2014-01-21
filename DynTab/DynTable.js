@@ -78,7 +78,9 @@ var DynTable = function (objet)
         //PAGINATION
         PAGIN: 30,
         //INITIALISÉ
-        ISINIT: false
+        ISINIT: false,
+        //HREF
+        FOLLOW: true
     };
 
     /*DEBUG
@@ -198,7 +200,7 @@ var DynTable = function (objet)
             //LIBÉRATION DE LA LIGNE
             EVENT.LineAdding = false;
 
-            if (trPrev)
+            if (trPrev && TABLE.FOLLOW)
                 location.replace(location.pathname + "#" + trPrev.id);
 
             _getButtonPlus(document.getElementById(TABLE.ID));
@@ -290,7 +292,8 @@ var DynTable = function (objet)
             //AFFICHAGE DE LA NOUVELLE LIGNE
             oldTr.parentNode.replaceChild(newTr, oldTr);
 
-            location.replace(location.pathname + "#" + newTr.id);
+            if(TABLE.FOLLOW)
+                location.replace(location.pathname + "#" + newTr.id);
         });
 
         tdFin.appendChild(buttonVal);
@@ -300,7 +303,9 @@ var DynTable = function (objet)
 
         tbody.insertBefore(trIns, tr);
 
-        location.replace(location.pathname + "#" + trIns.id);
+        if (TABLE.FOLLOW)
+            location.replace(location.pathname + "#" + trIns.id);
+
         trIns.firstChild.firstChild.focus();
 
         //ON RETOURNE LA LIGNE INSÉRÉE
@@ -447,7 +452,9 @@ var DynTable = function (objet)
             }
 
             tr.replaceChild(oldButtons, newButtons);
-            location.replace(location.pathname + "#" + tr.id);
+
+            if(TABLE.FOLLOW)
+                location.replace(location.pathname + "#" + tr.id);
 
             EVENT.LineEditing = false;
         });
@@ -495,13 +502,17 @@ var DynTable = function (objet)
             }
 
             tr.replaceChild(oldButtons, newButtons);
-            location.replace(location.pathname + "#" + tr.id);
+
+            if(TABLE.FOLLOW)
+                location.replace(location.pathname + "#" + tr.id);
 
             EVENT.LineEditing = false;
         });
 
         //FOCUS L'ÉDITION DE LA LIGNE SINON LE SCROLL PART N'IMPORTE OÙ
-        location.replace(location.pathname + "#" + tr.id);
+        if(TABLE.FOLLOW)
+            location.replace(location.pathname + "#" + tr.id);
+
         tr.firstChild.firstChild.focus();
 
         return tr;
@@ -614,6 +625,26 @@ var DynTable = function (objet)
     };
     /*
         REGION EVENTS
+    **********************/
+
+
+    /**********************
+        REGION
+    */
+
+    /*DÉPLACE LE SCROLL OU NON LORS DE L'AJOUT/MODIFICATION D'UNE LIGNE DU TABLEAU
+    * @param {Bool} focus
+    */
+    this.Href = function (focus)
+    {
+        if (typeof focus !== "boolean")
+            throw "Argument wrong";
+
+        TABLE.FOLLOW = focus;
+    }
+
+    /*
+        REGION
     **********************/
 
 
