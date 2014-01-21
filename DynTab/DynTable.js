@@ -12,7 +12,7 @@ var DynTable = function (objet)
     //L'ÉLÉMENT CONTENANT LE TABLEAU
     var CIBLE = null;
 
-    var Fct = function () {},
+    var Fct = function () { },
         Obj = {},
         TypeFct = typeof Fct,
         TypeObj = typeof Obj,
@@ -42,7 +42,7 @@ var DynTable = function (objet)
         //LIGNE EXISTANTE SUPPRIMÉE
         LineDeleted: false,
         //INSERTION DE DONNÉES
-        DataLoad : undefined,
+        DataLoad: undefined,
         //DONNÉES AJOUTÉES
         DataLoading: false
     };
@@ -260,7 +260,7 @@ var DynTable = function (objet)
                         td.innerHTML = oldTr.childNodes[i].innerHTML;
 
                         data.push(oldTr.childNodes[i].innerHTML);
-                    break;
+                        break;
                     default:
                         td.innerHTML = _getVal(oldTr.childNodes[i]);
 
@@ -292,7 +292,7 @@ var DynTable = function (objet)
             //AFFICHAGE DE LA NOUVELLE LIGNE
             oldTr.parentNode.replaceChild(newTr, oldTr);
 
-            if(TABLE.FOLLOW)
+            if (TABLE.FOLLOW)
                 location.replace(location.pathname + "#" + newTr.id);
         });
 
@@ -365,7 +365,7 @@ var DynTable = function (objet)
 
         for (var i = 0; i < DATA.header.length; i++) {
             //ON MODIFIE LES CHAMPS SI IL NE S'AGIT PAS D'UN LINEID
-            if (DATA.dataType[i] !== "lineId") {
+            if (DATA.dataType[i] !== "lineId" && DATA.dataType[i] !== "html") {
                 var l_cel = _getElement(DATA.dataType[i], tr.children[i]);
                 //VIDE LE CHAMP
                 tr.children[i].innerHTML = "";
@@ -435,11 +435,11 @@ var DynTable = function (objet)
                         //ON NE MODIFIE PAS L'IDENTIFIANT EXISTANT
                         break;
                     case "html":
-                        //PAS DE MODIFICATION POUR LE MOMENT
-                        DATA.body[tr.rowIndex - 1][i] = tr.children[i].innerHTML;
+                        //PAS DE MODIFICATION
+                        DATA.body[tr.rowIndex - 1][i] = tr.children[i].children;
 
-                        l_cel.innerHTML = DATA.body[tr.rowIndex - 1][i];
-                    break;
+                        l_cel = tr.children[i];
+                        break;
                     default:
                         DATA.body[tr.rowIndex - 1][i] = _getVal(tr.children[i]);
 
@@ -453,7 +453,7 @@ var DynTable = function (objet)
 
             tr.replaceChild(oldButtons, newButtons);
 
-            if(TABLE.FOLLOW)
+            if (TABLE.FOLLOW)
                 location.replace(location.pathname + "#" + tr.id);
 
             EVENT.LineEditing = false;
@@ -491,6 +491,9 @@ var DynTable = function (objet)
                     case "lineId":
                         //ON EN FAIT RIEN SI C'EST UN CHAMPS LINEID
                         break;
+                    case "html":
+                        l_cel = tr.children[i];
+                        break;
                     default:
                         l_cel.innerHTML = DATA.body[tr.rowIndex - 1][i] || "";
                         break;
@@ -503,14 +506,14 @@ var DynTable = function (objet)
 
             tr.replaceChild(oldButtons, newButtons);
 
-            if(TABLE.FOLLOW)
+            if (TABLE.FOLLOW)
                 location.replace(location.pathname + "#" + tr.id);
 
             EVENT.LineEditing = false;
         });
 
         //FOCUS L'ÉDITION DE LA LIGNE SINON LE SCROLL PART N'IMPORTE OÙ
-        if(TABLE.FOLLOW)
+        if (TABLE.FOLLOW)
             location.replace(location.pathname + "#" + tr.id);
 
         tr.firstChild.firstChild.focus();
@@ -677,7 +680,7 @@ var DynTable = function (objet)
             DATA.values = [];
             DATA.body = [];
         }
-        
+
         //RÉINITIALISATION DES ÉVENEMENTS
         EVENT.LineAdding = false,
         EVENT.LineEditing = false,
@@ -819,39 +822,39 @@ var DynTable = function (objet)
                         case "text":
                         case "descr":
                             td.appendChild(document.createTextNode(DATA.body[i][j]));
-                        break;
+                            break;
                         case "bool":
                             var chkbx = _getElement("bool");
                             chkbx.checked = (DATA.body[i][j] === 1 ? true : false);
                             chkbx.disabled = true;
                             td.appendChild(chkbx);
                             td.align = "center";
-                        break;
+                            break;
                         case "ddl":
                             var ddl = _getDdl(j, DATA.body[i][j]);
                             ddl.disabled = true;
 
                             td.appendChild(ddl);
-                        break;
+                            break;
                         case "lineId":
                             //L'IDENTIFIANT DE LA LIGNE
                             tr.id = DATA.body[i][j];
-                        break;
+                            break;
                         case "html":
                             switch (typeof DATA.body[i][j]) {
                                 case "string":
                                     td.innerHTML = DATA.body[i][j];
-                                break;
+                                    break;
                                 case "object":
                                     td.appendChild(DATA.body[i][j]);
-                                break;
+                                    break;
                                 default:
                                     td.appendChild(document.createTextNode(DATA.body[i][j]));
                             }
-                        break;
+                            break;
                         default:
                             td.appendChild(document.createTextNode(DATA.body[i][j]));
-                        break;
+                            break;
                     }
                 }
                 else
@@ -1001,7 +1004,7 @@ var DynTable = function (objet)
             ret = document.getElementById(CIBLE).innerHTML;
         else
             ret = _draw();
-        
+
         return ret;
     };
 
@@ -1028,17 +1031,17 @@ var DynTable = function (objet)
                 elt = document.createElement("input");
                 elt.setAttribute("type", "text");
                 elt.value = _getVal(node);
-            break;
+                break;
             case "descr":
                 elt = document.createElement("textarea");
                 elt.style.width = "100%";
                 elt.value = _getVal(node);
-            break;
+                break;
             case "bool":
                 elt = document.createElement("input");
                 elt.setAttribute("type", "checkbox");
                 elt.checked = _getVal(node);
-            break;
+                break;
             case "ddl":
                 elt = document.createElement("select");
                 //SI ON TROUVE UN SELECT ON LE GARDE TEL QU'IL EST
@@ -1046,7 +1049,7 @@ var DynTable = function (objet)
                     elt = node.firstChild;
                     elt.disabled = false;
                 }
-            break;
+                break;
             case "html":
                 if (node && node.firstChild) {
                     elt = node.firstChild.cloneNode(true);
@@ -1056,7 +1059,7 @@ var DynTable = function (objet)
                 }
 
                 //elt = (node ? (node.firstChild ? node.firstChild.cloneNode(true) : node.cloneNode(true)) : document.createTextNode(""));
-            break;
+                break;
             default:
                 elt = document.createElement("input");
                 elt.setAttribute("type", "text");
@@ -1209,8 +1212,6 @@ var DynTable = function (objet)
     */
     var _getButtonPlus = function (table)
     {
-        console.log("TABLE.ROWS =", TABLE.ROWS);
-
         //SI PAS DE LIGNE ET QUE L'AJOUT EST PERMIS
         if ((TABLE.ADDL.on || TABLE.ADDL.before) && TABLE.ROWS === 0) {
             //AJOUT DE L'ENTÊTE ACTIONS SI IL N'EST PAS DÉJÀ PRÉSENT
@@ -1242,7 +1243,7 @@ var DynTable = function (objet)
                 //SUPPRESSION DE LA LIGNE
                 table.tBodies[0].removeChild(e.target.parentElement.parentElement);
             });
-            
+
             tdPlus.setAttribute("colspan", TABLE.COLS);
             tdPlus.appendChild(document.createTextNode(""));
 
