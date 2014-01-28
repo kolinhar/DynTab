@@ -257,9 +257,9 @@ var DynTable = function (objet)
                         data.push(trIns.id);
                         break;
                     case "html":
-                        td.innerHTML = oldTr.childNodes[i].innerHTML;
+                        td = oldTr.childNodes[i];
 
-                        data.push(oldTr.childNodes[i].innerHTML);
+                        data.push(oldTr.childNodes[i].children);
                     break;
                     default:
                         td.innerHTML = _getVal(oldTr.childNodes[i]);
