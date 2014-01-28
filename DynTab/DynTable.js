@@ -12,7 +12,7 @@ var DynTable = function (objet)
     //L'ÉLÉMENT CONTENANT LE TABLEAU
     var CIBLE = null;
 
-    var Fct = function () {},
+    var Fct = function () { },
         Obj = {},
         TypeFct = typeof Fct,
         TypeObj = typeof Obj,
@@ -42,7 +42,7 @@ var DynTable = function (objet)
         //LIGNE EXISTANTE SUPPRIMÉE
         LineDeleted: false,
         //INSERTION DE DONNÉES
-        DataLoad : undefined,
+        DataLoad: undefined,
         //DONNÉES AJOUTÉES
         DataLoading: false
     };
@@ -260,7 +260,7 @@ var DynTable = function (objet)
                         td = oldTr.childNodes[i];
 
                         data.push(oldTr.childNodes[i].children);
-                    break;
+                        break;
                     default:
                         td.innerHTML = _getVal(oldTr.childNodes[i]);
 
@@ -292,7 +292,7 @@ var DynTable = function (objet)
             //AFFICHAGE DE LA NOUVELLE LIGNE
             oldTr.parentNode.replaceChild(newTr, oldTr);
 
-            if(TABLE.FOLLOW)
+            if (TABLE.FOLLOW)
                 location.replace(location.pathname + "#" + newTr.id);
         });
 
@@ -365,7 +365,7 @@ var DynTable = function (objet)
 
         for (var i = 0; i < DATA.header.length; i++) {
             //ON MODIFIE LES CHAMPS SI IL NE S'AGIT PAS D'UN LINEID
-            if (DATA.dataType[i] !== "lineId") {
+            if (DATA.dataType[i] !== "lineId" && DATA.dataType[i] !== "html") {
                 var l_cel = _getElement(DATA.dataType[i], tr.children[i]);
                 //VIDE LE CHAMP
                 tr.children[i].innerHTML = "";
@@ -435,11 +435,11 @@ var DynTable = function (objet)
                         //ON NE MODIFIE PAS L'IDENTIFIANT EXISTANT
                         break;
                     case "html":
-                        //PAS DE MODIFICATION POUR LE MOMENT
-                        DATA.body[tr.rowIndex - 1][i] = tr.children[i].innerHTML;
+                        //PAS DE MODIFICATION
+                        DATA.body[tr.rowIndex - 1][i] = tr.children[i].children;
 
-                        l_cel.innerHTML = DATA.body[tr.rowIndex - 1][i];
-                    break;
+                        l_cel = tr.children[i];
+                        break;
                     default:
                         DATA.body[tr.rowIndex - 1][i] = _getVal(tr.children[i]);
 
@@ -453,7 +453,7 @@ var DynTable = function (objet)
 
             tr.replaceChild(oldButtons, newButtons);
 
-            if(TABLE.FOLLOW)
+            if (TABLE.FOLLOW)
                 location.replace(location.pathname + "#" + tr.id);
 
             EVENT.LineEditing = false;
@@ -491,6 +491,9 @@ var DynTable = function (objet)
                     case "lineId":
                         //ON EN FAIT RIEN SI C'EST UN CHAMPS LINEID
                         break;
+                    case "html":
+                        l_cel = tr.children[i];
+                        break;
                     default:
                         l_cel.innerHTML = DATA.body[tr.rowIndex - 1][i] || "";
                         break;
@@ -503,14 +506,14 @@ var DynTable = function (objet)
 
             tr.replaceChild(oldButtons, newButtons);
 
-            if(TABLE.FOLLOW)
+            if (TABLE.FOLLOW)
                 location.replace(location.pathname + "#" + tr.id);
 
             EVENT.LineEditing = false;
         });
 
         //FOCUS L'ÉDITION DE LA LIGNE SINON LE SCROLL PART N'IMPORTE OÙ
-        if(TABLE.FOLLOW)
+        if (TABLE.FOLLOW)
             location.replace(location.pathname + "#" + tr.id);
 
         tr.firstChild.firstChild.focus();
@@ -603,8 +606,20 @@ var DynTable = function (objet)
         TABLE.DELL.before = false;
     };
 
+    /*QUAND UN NOUVEAU JEU DE DONNÉES EST CHARGÉ DANS LE TABLEAU
+    * @param {Object} oldDatas : l'ancien jeu de données
+    * @param {Object} newDatas : le nouveau jeu de données
+    */
+    var DataLoad = function (oldDatas, newDatas)
+    {
+        //ÉVENEMENT PERSONNALISÉ
+        EVENT.DataLoad && EVENT.DataLoad(oldDatas, newDatas);
+
+        //SOMETHING @TODO ... LATER
+    }
+
     /*QUAND UN JEU DE DONNÉES EST INSERÉ DANS LE TABLEAU EN PLACE
-    * @param {Function(data)} handler : fonction éxecutée au chargement des données
+    * @param {Function(dataOld, dataNew)} handler : fonction éxecutée à la fin du chargement des données
     */
     this.onDataLoad = function (handler)
     {
@@ -612,8 +627,6 @@ var DynTable = function (objet)
             throw "this handler is not a function for onDataLoad";
 
         EVENT.DataLoad = handler;
-        TABLE.LOAD = true;
-
     };
 
     /*ANNULE L'ÉCOUTE DE L'ÉVENEMENT ONDATALOAD
@@ -621,7 +634,6 @@ var DynTable = function (objet)
     this.onDataLoad.Stop = function ()
     {
         EVENT.DataLoad = undefined;
-        TABLE.LOAD = false;
     };
     /*
         REGION EVENTS
@@ -670,6 +682,21 @@ var DynTable = function (objet)
             }
         }
 
+        //COPIE LES ANCIENNES DONNÉES
+        ////MÉTHODE RAPIDE
+        //var oldData = JSON.parse(JSON.stringify(DATA));
+        //MÉTHODE LA PLUS RAPIDE (http://jsperf.com/cloning-an-object/2)
+        var oldData = function clone(obj)
+        {
+            var target = {};
+            for (var i in obj) {
+                if (obj.hasOwnProperty(i)) {
+                    target[i] = obj[i];
+                }
+            }
+            return target;
+        }(DATA)
+
         //SI ON MODIFIE LES DONNÉES EN COURS D'INSTANCE, ON REDESSINE LE TABLEAU
         if (TABLE.ISINIT) {
             DATA.header = [];
@@ -677,7 +704,7 @@ var DynTable = function (objet)
             DATA.values = [];
             DATA.body = [];
         }
-        
+
         //RÉINITIALISATION DES ÉVENEMENTS
         EVENT.LineAdding = false,
         EVENT.LineEditing = false,
@@ -727,12 +754,12 @@ var DynTable = function (objet)
         //SI ON MODIFIE LES DONNÉES EN COURS D'INSTANCE
         if (TABLE.ISINIT) {
             objet = obj;
-            //ON REDESSINE COMPLÈTEMENT LE TABLEAU
+            //ON REDESSINE COMPLÈTEMENT LE TABLEAU POUR L'INSTANT
             CIBLE.removeChild(document.getElementById("DynTable" + this.id));
             CIBLE.appendChild(_draw());
-            //ÉVENEMENT D'AJOUT DE DONNÉES
-            EVENT.DataLoad && EVENT.DataLoad(DATA);
             TABLE.LOAD = true;
+            //ÉVENEMENT D'AJOUT DE DONNÉES
+            EVENT.DataLoad && EVENT.DataLoad(oldData, DATA);
         }
     }
 
@@ -819,39 +846,39 @@ var DynTable = function (objet)
                         case "text":
                         case "descr":
                             td.appendChild(document.createTextNode(DATA.body[i][j]));
-                        break;
+                            break;
                         case "bool":
                             var chkbx = _getElement("bool");
                             chkbx.checked = (DATA.body[i][j] === 1 ? true : false);
                             chkbx.disabled = true;
                             td.appendChild(chkbx);
                             td.align = "center";
-                        break;
+                            break;
                         case "ddl":
                             var ddl = _getDdl(j, DATA.body[i][j]);
                             ddl.disabled = true;
 
                             td.appendChild(ddl);
-                        break;
+                            break;
                         case "lineId":
                             //L'IDENTIFIANT DE LA LIGNE
                             tr.id = DATA.body[i][j];
-                        break;
+                            break;
                         case "html":
                             switch (typeof DATA.body[i][j]) {
                                 case "string":
                                     td.innerHTML = DATA.body[i][j];
-                                break;
+                                    break;
                                 case "object":
                                     td.appendChild(DATA.body[i][j]);
-                                break;
+                                    break;
                                 default:
                                     td.appendChild(document.createTextNode(DATA.body[i][j]));
                             }
-                        break;
+                            break;
                         default:
                             td.appendChild(document.createTextNode(DATA.body[i][j]));
-                        break;
+                            break;
                     }
                 }
                 else
@@ -1001,7 +1028,7 @@ var DynTable = function (objet)
             ret = document.getElementById(CIBLE).innerHTML;
         else
             ret = _draw();
-        
+
         return ret;
     };
 
@@ -1028,17 +1055,17 @@ var DynTable = function (objet)
                 elt = document.createElement("input");
                 elt.setAttribute("type", "text");
                 elt.value = _getVal(node);
-            break;
+                break;
             case "descr":
                 elt = document.createElement("textarea");
                 elt.style.width = "100%";
                 elt.value = _getVal(node);
-            break;
+                break;
             case "bool":
                 elt = document.createElement("input");
                 elt.setAttribute("type", "checkbox");
                 elt.checked = _getVal(node);
-            break;
+                break;
             case "ddl":
                 elt = document.createElement("select");
                 //SI ON TROUVE UN SELECT ON LE GARDE TEL QU'IL EST
@@ -1046,7 +1073,7 @@ var DynTable = function (objet)
                     elt = node.firstChild;
                     elt.disabled = false;
                 }
-            break;
+                break;
             case "html":
                 if (node && node.firstChild) {
                     elt = node.firstChild.cloneNode(true);
@@ -1056,7 +1083,7 @@ var DynTable = function (objet)
                 }
 
                 //elt = (node ? (node.firstChild ? node.firstChild.cloneNode(true) : node.cloneNode(true)) : document.createTextNode(""));
-            break;
+                break;
             default:
                 elt = document.createElement("input");
                 elt.setAttribute("type", "text");
@@ -1209,8 +1236,6 @@ var DynTable = function (objet)
     */
     var _getButtonPlus = function (table)
     {
-        console.log("TABLE.ROWS =", TABLE.ROWS);
-
         //SI PAS DE LIGNE ET QUE L'AJOUT EST PERMIS
         if ((TABLE.ADDL.on || TABLE.ADDL.before) && TABLE.ROWS === 0) {
             //AJOUT DE L'ENTÊTE ACTIONS SI IL N'EST PAS DÉJÀ PRÉSENT
@@ -1242,7 +1267,7 @@ var DynTable = function (objet)
                 //SUPPRESSION DE LA LIGNE
                 table.tBodies[0].removeChild(e.target.parentElement.parentElement);
             });
-            
+
             tdPlus.setAttribute("colspan", TABLE.COLS);
             tdPlus.appendChild(document.createTextNode(""));
 
