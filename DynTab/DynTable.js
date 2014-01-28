@@ -606,8 +606,20 @@ var DynTable = function (objet)
         TABLE.DELL.before = false;
     };
 
+    /*QUAND UN NOUVEAU JEU DE DONNÉES EST CHARGÉ DANS LE TABLEAU
+    * @param {Object} oldDatas : l'ancien jeu de données
+    * @param {Object} newDatas : le nouveau jeu de données
+    */
+    var DataLoad = function (oldDatas, newDatas)
+    {
+        //ÉVENEMENT PERSONNALISÉ
+        EVENT.DataLoad && EVENT.DataLoad(oldDatas, newDatas);
+
+        //SOMETHING @TODO ... LATER
+    }
+
     /*QUAND UN JEU DE DONNÉES EST INSERÉ DANS LE TABLEAU EN PLACE
-    * @param {Function(data)} handler : fonction éxecutée au chargement des données
+    * @param {Function(dataOld, dataNew)} handler : fonction éxecutée à la fin du chargement des données
     */
     this.onDataLoad = function (handler)
     {
@@ -615,8 +627,6 @@ var DynTable = function (objet)
             throw "this handler is not a function for onDataLoad";
 
         EVENT.DataLoad = handler;
-        TABLE.LOAD = true;
-
     };
 
     /*ANNULE L'ÉCOUTE DE L'ÉVENEMENT ONDATALOAD
@@ -624,7 +634,6 @@ var DynTable = function (objet)
     this.onDataLoad.Stop = function ()
     {
         EVENT.DataLoad = undefined;
-        TABLE.LOAD = false;
     };
     /*
         REGION EVENTS
@@ -672,6 +681,21 @@ var DynTable = function (objet)
                 throw "Object isn't look like the expected model";
             }
         }
+
+        //COPIE LES ANCIENNES DONNÉES
+        ////MÉTHODE RAPIDE
+        //var oldData = JSON.parse(JSON.stringify(DATA));
+        //MÉTHODE LA PLUS RAPIDE (http://jsperf.com/cloning-an-object/2)
+        var oldData = function clone(obj)
+        {
+            var target = {};
+            for (var i in obj) {
+                if (obj.hasOwnProperty(i)) {
+                    target[i] = obj[i];
+                }
+            }
+            return target;
+        }(DATA)
 
         //SI ON MODIFIE LES DONNÉES EN COURS D'INSTANCE, ON REDESSINE LE TABLEAU
         if (TABLE.ISINIT) {
@@ -730,12 +754,12 @@ var DynTable = function (objet)
         //SI ON MODIFIE LES DONNÉES EN COURS D'INSTANCE
         if (TABLE.ISINIT) {
             objet = obj;
-            //ON REDESSINE COMPLÈTEMENT LE TABLEAU
+            //ON REDESSINE COMPLÈTEMENT LE TABLEAU POUR L'INSTANT
             CIBLE.removeChild(document.getElementById("DynTable" + this.id));
             CIBLE.appendChild(_draw());
-            //ÉVENEMENT D'AJOUT DE DONNÉES
-            EVENT.DataLoad && EVENT.DataLoad(DATA);
             TABLE.LOAD = true;
+            //ÉVENEMENT D'AJOUT DE DONNÉES
+            EVENT.DataLoad && EVENT.DataLoad(oldData, DATA);
         }
     }
 
