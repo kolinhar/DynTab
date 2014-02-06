@@ -54,7 +54,8 @@ var DynTable = function (objet)
             header: [],
             body: [],
             dataType: [],
-            values: []
+            values: [],
+            sortable: []
         };
 
     //INFOS RELATIVES AU TABLEAU                
@@ -703,6 +704,7 @@ var DynTable = function (objet)
             DATA.dataType = [];
             DATA.values = [];
             DATA.body = [];
+            DATA.sortable = [];
         }
 
         //RÉINITIALISATION DES ÉVENEMENTS
@@ -718,6 +720,11 @@ var DynTable = function (objet)
 
             if (obj.header[i].dataType === "ddl")
                 DATA.values[i] = obj.header[i].values;
+
+            if (obj.header[i].sortable === true)
+                DATA.sortable.push(true);
+            else
+                DATA.sortable.push(false);
         }
 
         //CORPS
@@ -754,9 +761,11 @@ var DynTable = function (objet)
         //SI ON MODIFIE LES DONNÉES EN COURS D'INSTANCE
         if (TABLE.ISINIT) {
             objet = obj;
-            //ON REDESSINE COMPLÈTEMENT LE TABLEAU POUR L'INSTANT
-            CIBLE.removeChild(document.getElementById("DynTable" + this.id));
+
+            //ON RECONSTRUIT LE TABLEAU
+            CIBLE.removeChild(document.getElementById(TABLE.ID));
             CIBLE.appendChild(_draw());
+
             TABLE.LOAD = true;
             //ÉVENEMENT D'AJOUT DE DONNÉES
             EVENT.DataLoad && EVENT.DataLoad(oldData, DATA);
@@ -801,7 +810,50 @@ var DynTable = function (objet)
             //NE PAS AFFICHER LE CHAMPS LINEID, IL SERT À INDIQUER L'IDENTIFIANT DE LA LIGNE
             if (DATA.dataType[i] !== "lineId") {
                 var thCell = document.createElement("th");
-                thCell.innerHTML = DATA.header[i];
+                thCell.appendChild(document.createTextNode(DATA.header[i]));
+
+                //TRI SUR COLONNE
+                if (DATA.sortable[i] === true) {
+                    //SENS DE TRI
+                    thCell.setAttribute("data-sort-direction", "1");
+                    var sortText = document.createTextNode(" ▼");
+
+                    //TRI AU CLICK
+                    thCell.addEventListener("click", function (e)
+                    {
+                        var cible = e.target,
+                            position = cible.cellIndex,
+                            nomCol = cible.firstChild.nodeValue,
+                            sens = parseInt(cible.getAttribute("data-sort-direction"), 10);
+
+                        //CHANGEMENT DE SENS DANS L'ENTÊTE
+                        if (sens > 0) {
+                            cible.setAttribute("data-sort-direction", "-1");
+                            cible.lastChild.nodeValue = " ▲";
+                        }
+                        else {
+                            cible.setAttribute("data-sort-direction", "1");
+                            cible.lastChild.nodeValue = " ▼";
+                        }
+
+                        //TRI DES DATAS
+                        DATA.body.sort(function (a, b)
+                        {
+                            if (a[position] > b[position])
+                                return (sens < 0 ? 1 : -1);
+                            if (a[position] < b[position])
+                                return (sens < 0 ? -1 : 1);
+
+                            //EN CAS D'ÉGALITÉ
+                            return 0;
+                        });
+
+                        //AFFICHAGE DES DATAS TRIÉES
+                        _redraw();
+                    }, true);
+                    thCell.style.cursor = "pointer";
+                    thCell.appendChild(sortText);
+                }
 
                 TR.appendChild(thCell);
             }
@@ -917,6 +969,15 @@ var DynTable = function (objet)
         _getButtonPlus(TabHTML);
 
         return TabHTML;
+    };
+
+    /*REDESSINE LE CORPS TABLEAU
+    */
+    var _redraw = function ()
+    {
+        //ON REDESSINE LE CORPS DU TABLEAU POUR L'INSTANT
+        document.getElementById(TABLE.ID).removeChild(document.getElementById(TABLE.ID).lastChild);
+        document.getElementById(TABLE.ID).appendChild(_draw().lastChild);
     }
 
     /*RETOURNE LES BOUTONS NÉCESSAIRES POUR UNE LIGNE
