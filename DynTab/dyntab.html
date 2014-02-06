@@ -115,20 +115,19 @@
             {
                 var datas = {
                         header: [
-                            { value: "Compte", dataType: "text" },
-                            { value: "Description", dataType: "descr" },
-                            { value: "UOP", dataType: "bool" },
-                            { value: "actif", dataType: "bool" },
-                            { value: "ACTIM", dataType: "bool" },
-                            { value: "GRT", dataType: "bool" },
-                            { value: "GIENS", dataType: "bool" },
-                            { value: "Forfait", dataType: "text" },
-                            { value: "Unité", dataType: "ddl", values: [
+                            { value: "Compte", dataType: "text", sortable: true },
+                            { value: "Description", dataType: "descr", sortable: true },
+                            { value: "UOP", dataType: "bool", sortable: true },
+                            { value: "actif", dataType: "bool", sortable: true },
+                            { value: "ACTIM", dataType: "bool", sortable: true },
+                            { value: "GRT", dataType: "bool", sortable: true },
+                            { value: "GIENS", dataType: "bool", sortable: true },
+                            { value: "Forfait", dataType: "text", sortable: true },
+                            { value: "Unité", dataType: "ddl", sortable: true, values: [
                                                                             { COMMUN: "COMMUN" },
                                                                             { TELECOM: "TELECOM" },
                                                                             { INFORMATIQUE: "INFORMATIQUE" }
-                            ]},
-                            { value: "HTML", dataType: "html" }
+                            ]}
                         ],
                         body: []
                     },
@@ -144,14 +143,9 @@
                         g_dataComptes[i].has_GRT,
                         g_dataComptes[i].has_GIENS,
                         g_dataComptes[i].forfait,
-                        g_dataComptes[i].unite,
-                        document.createElement("button")
+                        g_dataComptes[i].unite
                     ]);
                 }
-
-                //TEST
-                var s = document.createElement("select");
-                    
 
                 if (table.Debug())
                     console.log(new Date().getTime() - chrono + "ms pour construction des données");
@@ -200,28 +194,28 @@
                 table.getTableTo("ici");
 
                 //DANS 0.5 SECONDES ON CHANGE LE JEUX DE DONNÉES
-                window.setTimeout(function ()
-                {
-                    console.log("changement de data");
-                    datas.header.push({value : "id", dataType: "lineId"})
-                    datas.body = [
-                        [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN", "<hr /><br /><hr />", "id1"],
-                        [2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE", "<hr /><br /><hr />", "id2"],
-                        [2, "ligne de description numéro 3", 0, 1, 0, 0, 0, "générique", "COMMUN", "<hr /><br /><hr />", "id3"],
-                        [4, "ligne de description numéro 4", 1, 1, 1, 1, 1, "générique", "TELECOM", "<hr /><br /><hr />", "id4"]
-                    ];
-                    table.setData(datas);
+                //window.setTimeout(function ()
+                //{
+                //    console.log("changement de data");
+                //    datas.header.push({value : "id", dataType: "lineId"})
+                //    datas.body = [
+                //        [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN", "<hr /><br /><hr />", "id1"],
+                //        [2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE", "<hr /><br /><hr />", "id2"],
+                //        [2, "ligne de description numéro 3", 0, 1, 0, 0, 0, "générique", "COMMUN", "<hr /><br /><hr />", "id3"],
+                //        [4, "ligne de description numéro 4", 1, 1, 1, 1, 1, "générique", "TELECOM", "<hr /><br /><hr />", "id4"]
+                //    ];
+                //    table.setData(datas);
 
-                    //var table2 = new DynTable(datas);
-                    //table2.getTableTo("ici2");
+                //    //var table2 = new DynTable(datas);
+                //    //table2.getTableTo("ici2");
 
-                    //window.setTimeout(function ()
-                    //{
-                    //    datas.body = [[2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE"], [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN"]];
+                //    //window.setTimeout(function ()
+                //    //{
+                //    //    datas.body = [[2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE"], [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN"]];
 
-                    //    table2.setData(datas);
-                    //}, 1000);
-                }, 500);
+                //    //    table2.setData(datas);
+                //    //}, 1000);
+                //}, 500);
             }
         });
         });
