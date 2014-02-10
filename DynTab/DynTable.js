@@ -636,6 +636,15 @@ var DynTable = function (objet)
     {
         EVENT.DataLoad = undefined;
     };
+
+    /*QUAND UNE COLONNE DU TABLEAU EST TRIÉE
+    */
+    var Sort = function ()
+    {
+        EVENT.LineAdding = false;
+        EVENT.LineEditing = false;
+    };
+
     /*
         REGION EVENTS
     **********************/
@@ -821,6 +830,9 @@ var DynTable = function (objet)
                     //TRI AU CLICK
                     thCell.addEventListener("click", function (e)
                     {
+                        //"ÉVENEMENT" DE TRI SUR LE TABLEAU
+                        Sort();
+
                         var cible = e.target,
                             position = cible.cellIndex,
                             nomCol = cible.firstChild.nodeValue,
@@ -1086,13 +1098,12 @@ var DynTable = function (objet)
         var ret;
 
         if (TABLE.ISINIT)
-            ret = document.getElementById(CIBLE).innerHTML;
+            ret = document.getElementById(CIBLE);
         else
             ret = _draw();
 
         return ret;
     };
-
 
     /*retourne le jeu de données utilisé par l'instance
     * @returns {Object}
