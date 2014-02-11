@@ -189,6 +189,11 @@
                     console.log(arguments);
                 });
 
+                table.onRendered(function (elt)
+                {
+                    console.log("table affichée", elt);
+                });
+
                 table.Href(false);
 
                 table.getTableTo("ici");
