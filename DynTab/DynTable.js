@@ -21,6 +21,8 @@ var DynTable = function (objet)
 
     //LES ÉVENEMENTS
     var EVENT = {
+        //QUAND LA TABLE EST AFFICHÉE
+        Rendered: undefined,
         //CLICK SUR UNE LIGNE
         LineClick: undefined,
         //AJOUT D'UNE LIGNE
@@ -114,6 +116,32 @@ var DynTable = function (objet)
     /**********************
         REGION EVENTS
     */
+
+    /*QUAND LA TABLE EST DESSINÉE
+    * @param {Function(elt)} handler : fonction éxecutée après le rendu graphique du tableau
+    */
+    this.onRendered = function (handler)
+    {
+        if (typeof handler !== TypeFct)
+            throw "this handler is not a function for onRendered";
+
+        EVENT.Rendered = handler;
+    }
+
+    /*ANNULE L'ÉCOUTE DE L'ÉVENEMENT ONRENDERED
+    */
+    this.onRendered.Stop = function ()
+    {
+        EVENT.Rendered = undefined;
+    }
+
+    /*LA TABLE EST AFFICHÉE
+    * @param {Element} elt : la table HTML
+    */
+    var Rendered = function (elt)
+    {
+        EVENT.Rendered && EVENT.Rendered(elt);
+    }
 
     /*QUAND ON CLICK SUR UNE LIGNE
     * @param {Function(e, elt)} handler : fonction éxecutée au click d'ajout d'une ligne
@@ -636,6 +664,15 @@ var DynTable = function (objet)
     {
         EVENT.DataLoad = undefined;
     };
+
+    /*QUAND UNE COLONNE DU TABLEAU EST TRIÉE
+    */
+    var Sort = function ()
+    {
+        EVENT.LineAdding = false;
+        EVENT.LineEditing = false;
+    };
+
     /*
         REGION EVENTS
     **********************/
@@ -766,6 +803,9 @@ var DynTable = function (objet)
             CIBLE.removeChild(document.getElementById(TABLE.ID));
             CIBLE.appendChild(_draw());
 
+            //TABLEAU AFFICHÉ
+            Rendered(document.getElementById(TABLE.ID));
+
             TABLE.LOAD = true;
             //ÉVENEMENT D'AJOUT DE DONNÉES
             EVENT.DataLoad && EVENT.DataLoad(oldData, DATA);
@@ -821,6 +861,9 @@ var DynTable = function (objet)
                     //TRI AU CLICK
                     thCell.addEventListener("click", function (e)
                     {
+                        //"ÉVENEMENT" DE TRI SUR LE TABLEAU
+                        Sort();
+
                         var cible = e.target,
                             position = cible.cellIndex,
                             nomCol = cible.firstChild.nodeValue,
@@ -978,6 +1021,9 @@ var DynTable = function (objet)
         //ON REDESSINE LE CORPS DU TABLEAU POUR L'INSTANT
         document.getElementById(TABLE.ID).removeChild(document.getElementById(TABLE.ID).lastChild);
         document.getElementById(TABLE.ID).appendChild(_draw().lastChild);
+
+        //TABLEAU AFFICHÉ
+        Rendered(document.getElementById(TABLE.ID));
     }
 
     /*RETOURNE LES BOUTONS NÉCESSAIRES POUR UNE LIGNE
@@ -1072,6 +1118,9 @@ var DynTable = function (objet)
             CIBLE.appendChild(_draw());
 
             TABLE.ISINIT = true;
+
+            //TABLEAU AFFICHÉ
+            Rendered(document.getElementById(TABLE.ID));
         }
         else {
             console.log("identifiant '" + id + "' introuvable");
@@ -1086,13 +1135,12 @@ var DynTable = function (objet)
         var ret;
 
         if (TABLE.ISINIT)
-            ret = document.getElementById(CIBLE).innerHTML;
+            ret = document.getElementById(CIBLE);
         else
             ret = _draw();
 
         return ret;
     };
-
 
     /*retourne le jeu de données utilisé par l'instance
     * @returns {Object}

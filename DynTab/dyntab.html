@@ -105,7 +105,7 @@
             type: 'GET',
             success: function (data, textStatus, jqXHR)
             {
-                g_dataComptes = data;
+                g_dataComptes = data.L_Comptes;
             },
             error: function (jqXHR, textStatus, errorThrown)
             {
@@ -189,33 +189,38 @@
                     console.log(arguments);
                 });
 
+                table.onRendered(function (elt)
+                {
+                    console.log("table affichée", elt);
+                });
+
                 table.Href(false);
 
                 table.getTableTo("ici");
 
-                //DANS 0.5 SECONDES ON CHANGE LE JEUX DE DONNÉES
-                //window.setTimeout(function ()
-                //{
-                //    console.log("changement de data");
-                //    datas.header.push({value : "id", dataType: "lineId"})
-                //    datas.body = [
-                //        [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN", "<hr /><br /><hr />", "id1"],
-                //        [2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE", "<hr /><br /><hr />", "id2"],
-                //        [2, "ligne de description numéro 3", 0, 1, 0, 0, 0, "générique", "COMMUN", "<hr /><br /><hr />", "id3"],
-                //        [4, "ligne de description numéro 4", 1, 1, 1, 1, 1, "générique", "TELECOM", "<hr /><br /><hr />", "id4"]
-                //    ];
-                //    table.setData(datas);
+                ////DANS 0.5 SECONDES ON CHANGE LE JEUX DE DONNÉES
+                window.setTimeout(function ()
+                {
+                    console.log("changement de data");
+                    datas.header.push({value : "id", dataType: "lineId"})
+                    datas.body = [
+                        [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN", "<hr /><br /><hr />", "id1"],
+                        [2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE", "<hr /><br /><hr />", "id2"],
+                        [2, "ligne de description numéro 3", 0, 1, 0, 0, 0, "générique", "COMMUN", "<hr /><br /><hr />", "id3"],
+                        [4, "ligne de description numéro 4", 1, 1, 1, 1, 1, "générique", "TELECOM", "<hr /><br /><hr />", "id4"]
+                    ];
+                    table.setData(datas);
 
-                //    //var table2 = new DynTable(datas);
-                //    //table2.getTableTo("ici2");
+                    //var table2 = new DynTable(datas);
+                    //table2.getTableTo("ici2");
 
-                //    //window.setTimeout(function ()
-                //    //{
-                //    //    datas.body = [[2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE"], [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN"]];
+                    //window.setTimeout(function ()
+                    //{
+                    //    datas.body = [[2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE"], [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN"]];
 
-                //    //    table2.setData(datas);
-                //    //}, 1000);
-                //}, 500);
+                    //    table2.setData(datas);
+                    //}, 1000);
+                }, 500);
             }
         });
         });
