@@ -196,6 +196,12 @@
 
                 table.Href(false);
 
+                table.onSort(function (th, sens)
+                {
+                    console.log("trie");
+                    console.log(arguments);
+                });
+
                 table.getTableTo("ici");
 
                 ////DANS 0.5 SECONDES ON CHANGE LE JEUX DE DONNÉES

@@ -46,7 +46,11 @@ var DynTable = function (objet)
         //INSERTION DE DONNÉES
         DataLoad: undefined,
         //DONNÉES AJOUTÉES
-        DataLoading: false
+        DataLoading: false,
+        //TRI SUR LES COLONNES
+        Sort: undefined,
+        //DONNÉES TRIÉES
+        Sorting: false
     };
 
     //MODELE DE DONNÉES ATTENDU
@@ -666,11 +670,33 @@ var DynTable = function (objet)
     };
 
     /*QUAND UNE COLONNE DU TABLEAU EST TRIÉE
+    * @param {Element} th : la colonne à trier
+    * @param {Number} direction : le sens de tri
     */
-    var Sort = function ()
+    var Sort = function (th, direction)
     {
         EVENT.LineAdding = false;
         EVENT.LineEditing = false;
+        EVENT.Sorting = true;
+        EVENT.Sort && EVENT.Sort(th, direction);
+    };
+
+    /*QUAND ON TRI LE TABLEAU
+    * @param {Function(th, direction)}
+    */
+    this.onSort = function (handler)
+    {
+        if (typeof handler !== TypeFct)
+            throw "this handler is not a function for onSort";
+
+        EVENT.Sort = handler;
+    };
+
+    /*ANNULE L'ÉCOUTE DE L'ÉVENEMENT ONSORT
+    */
+    this.onSort.Stop = function ()
+    {
+        EVENT.Sort = undefined;
     };
 
     /*
@@ -861,13 +887,13 @@ var DynTable = function (objet)
                     //TRI AU CLICK
                     thCell.addEventListener("click", function (e)
                     {
-                        //"ÉVENEMENT" DE TRI SUR LE TABLEAU
-                        Sort();
-
                         var cible = e.target,
                             position = cible.cellIndex,
                             nomCol = cible.firstChild.nodeValue,
                             sens = parseInt(cible.getAttribute("data-sort-direction"), 10);
+
+                        //"ÉVENEMENT" DE TRI SUR LE TABLEAU
+                        Sort(cible, -sens);
 
                         //CHANGEMENT DE SENS DANS L'ENTÊTE
                         if (sens > 0) {
