@@ -3,6 +3,8 @@
 */
 var DynTable = function (objet)
 {
+    "use strict";
+
     //L'INSTANCE
     var _selfObj = this;
 
@@ -724,6 +726,33 @@ var DynTable = function (objet)
     **********************/
 
 
+
+    /**********************
+        REGION
+    */
+
+    /*RETOURNE LA LIGNE SÉLÉCTIONNÉE
+    * @param {String} id : identifiant de ligne
+    * @return {Array} : les données utilisées par l'instance correspondant à la ligne
+    */
+    this.getLine = function(id)
+    {
+        //POSITION DE L'IDENTIFIANT
+        var idPosition = DATA.dataType.indexOf("lineId");
+
+        for (var i = 0; i < DATA.body.length; i++)
+            if (DATA.body[i][idPosition] === id)
+                return DATA.body[i];
+
+        //LIGNE INTROUVABLE
+        return null;
+    }
+
+    /*
+        REGION
+    **********************/
+
+
     /*INITIALISE LES DONNÉES DU TABLEAU
     * @param {Object} obj
     */
@@ -789,6 +818,10 @@ var DynTable = function (objet)
             else
                 DATA.sortable.push(false);
         }
+
+        //SEULEMENT 1 LINEID MAX PAR LIGNE
+        if (DATA.dataType.filter(function(val, ind, arr){ return val === "lineId"}).length > 1)
+            throw "Only 1 'lineId' max";
 
         //CORPS
         for (var j = 0; j < obj.body.length; j++) {

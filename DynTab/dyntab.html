@@ -16,6 +16,7 @@
     <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16" />
     <meta name="msapplication-TileColor" content="#da532c" />
     <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
+    <!--favicon généré sur http://realfavicongenerator.net/ -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>test de tableau dynamique</title>
@@ -204,16 +205,16 @@
 
                 table.getTableTo("ici");
 
-                ////DANS 0.5 SECONDES ON CHANGE LE JEUX DE DONNÉES
+                //DANS 0.5 SECONDES ON CHANGE LE JEUX DE DONNÉES
                 window.setTimeout(function ()
                 {
                     console.log("changement de data");
                     datas.header.push({value : "id", dataType: "lineId"})
                     datas.body = [
-                        [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN", "<hr /><br /><hr />", "id1"],
-                        [2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE", "<hr /><br /><hr />", "id2"],
-                        [2, "ligne de description numéro 3", 0, 1, 0, 0, 0, "générique", "COMMUN", "<hr /><br /><hr />", "id3"],
-                        [4, "ligne de description numéro 4", 1, 1, 1, 1, 1, "générique", "TELECOM", "<hr /><br /><hr />", "id4"]
+                        [1, "ligne de description numéro 1", 0, 1, 0, 1, 0, "générique", "COMMUN", "id1"],
+                        [2, "ligne de description numéro 2", 1, 0, 1, 0, 1, "générique", "INFORMATIQUE", "id2"],
+                        [2, "ligne de description numéro 3", 0, 1, 0, 0, 0, "générique", "COMMUN", "id3"],
+                        [4, "ligne de description numéro 4", 1, 1, 1, 1, 1, "générique", "TELECOM", "id4"]
                     ];
                     table.setData(datas);
 
