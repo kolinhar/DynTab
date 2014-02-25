@@ -8,9 +8,6 @@ var DynTable = function (objet)
     //L'INSTANCE
     var _selfObj = this;
 
-    //GÉNÉRATION DE L'ID DE L'OBJET
-    _selfObj.id = _getId();
-
     //L'ÉLÉMENT CONTENANT LE TABLEAU
     var CIBLE = null;
 
@@ -95,7 +92,7 @@ var DynTable = function (objet)
     /*DEBUG
     * SI ON EST SUR IE PAR DÉFAUT ON EST PAS EN DEBUG (PB AVEC LA CONSOLE)
     * oui je sais : c'est de la discrimination pour les IE récents, 
-    * mais quand on t'as contraint à coder pour IE8... tu vois la vie différemment
+    * mais quand on t'a contraint à coder pour IE8... tu vois la vie différemment
     */
     var _DEBUG = (navigator.appName === "Microsoft Internet Explorer" ? false : location.hostname === "localhost");
     //INDIQUE SI ON EST EN DEBUG
@@ -732,10 +729,10 @@ var DynTable = function (objet)
     */
 
     /*RETOURNE LA LIGNE SÉLÉCTIONNÉE
-    * @param {String} id : identifiant de ligne
+    * @param {String/Number} id : identifiant de ligne
     * @return {Array} : les données utilisées par l'instance correspondant à la ligne
     */
-    this.getLine = function(id)
+    this.getLine = function (id)
     {
         //POSITION DE L'IDENTIFIANT
         var idPosition = DATA.dataType.indexOf("lineId");
@@ -748,6 +745,23 @@ var DynTable = function (objet)
         return null;
     }
 
+    /*AJOUTE UNE LIGNE DYNAMIQUEMENT
+    * @param {Array} line : les données de la ligne à insérer
+    * @param {String/Number} id : l'identifiant de la ligne au-dessus de laquelle doit être insérée la nouvelle ligne
+    */
+    this.insertDataBeforeLine = function (line, id)
+    {
+
+    }
+
+    /*MODIFIE LA LIGNE DYNAMIQUEMENT
+    * @param {Array} ligne : les données de la ligne à modifier
+    * @param {String/Number} id : l'identifiant de la ligne à modifier
+    */
+    this.updatetDataInLine = function (line, id)
+    {
+
+    }
     /*
         REGION
     **********************/
@@ -820,7 +834,7 @@ var DynTable = function (objet)
         }
 
         //SEULEMENT 1 LINEID MAX PAR LIGNE
-        if (DATA.dataType.filter(function(val, ind, arr){ return val === "lineId"}).length > 1)
+        if (DATA.dataType.filter(function (val, ind, arr) { return val === "lineId" }).length > 1)
             throw "Only 1 'lineId' max";
 
         //CORPS
@@ -1391,7 +1405,7 @@ var DynTable = function (objet)
     * @param {Bool} (Optionnal) Default : identifiant de ligne par défaut
     * @return {String}
     */
-    function _getId(Default)
+    var _getId = function (Default)
     {
         if (Default !== undefined)
             return "T" + _selfObj.id + "line" + Default;
@@ -1445,11 +1459,23 @@ var DynTable = function (objet)
             trPlus.appendChild(tdAct);
             table.tBodies[0].appendChild(trPlus);
         }
-    }
+    };
+
+    /*VÉRIFIE SI LA LIGNE CORRESPOND AUX MODÈLE DE DONNÉES
+    * @param {Array} line : la ligne à vérifier
+    * @returns {Bool}
+    */
+    var _isCorrectLine = function ()
+    {
+
+    };
 
     /*
     * @CTOR
     */
     if (objet)
         this.setData(objet);
+
+    //GÉNÉRATION DE L'ID DE L'OBJET
+    _selfObj.id = _getId();
 }
