@@ -753,14 +753,14 @@ var DynTable = function (objet)
     this.insertDataBeforeLine = function (line, id)
     {
         if (_isCorrectLine(line)) {
-                //AJOUT DE LIGNE À UN ENDROIT PRÉCIS
+            //AJOUT DE LIGNE À UN ENDROIT PRÉCIS
             if (id) {
                 var elt = document.querySelector("#" + TABLE.ID + " #" + id),
                     position = _getIndixById(id) || DATA.body.length;
 
                 //SI L'ÉLÉMENT HTML EXISTE ET QU'ON TROUVE LA LIGNE DANS LES DATA INTERNES
                 if (elt && position) {
-                    console.log("insertion précise" ,elt);
+                    console.log("insertion précise", elt);
                     //AJOUT D'UN ID SI IL N'EST PAS FOURNIE
                     if ((line.length + 1) === DATA.dataType.length)
                         line.push(_getId(true));
@@ -1484,23 +1484,23 @@ var DynTable = function (objet)
                     //console.log("Bool");
                     if (isNaN(parseInt(line[i], 10)) || (parseInt(line[i], 10) !== 1 && parseInt(line[i], 10) !== 0))
                         return false;
-                break;
-                //SI C'EST UNE DDL
+                    break;
+                    //SI C'EST UNE DDL
                 case "ddl":
                     //console.log("DDL");
                     var trouve = false;
 
                     top:
-                    for (var j = 0; j < DATA.values[i].length; j++)
-                        for (var k in DATA.values[i][j])
-                            if (DATA.values[i][j][k] === line[i]) {
-                                trouve = true;
-                                break top;
-                            }
-                        
+                        for (var j = 0; j < DATA.values[i].length; j++)
+                            for (var k in DATA.values[i][j])
+                                if (DATA.values[i][j][k] === line[i]) {
+                                    trouve = true;
+                                    break top;
+                                }
+
                     return trouve;
-                break;
-                //SI IL S'AGIT DES CHAMPS HABITUEL
+                    break;
+                    //SI IL S'AGIT DES CHAMPS HABITUEL
                 case "text":
                 case "descr":
                 case "lineId":
@@ -1510,7 +1510,7 @@ var DynTable = function (objet)
                     //SI CE N'EST PAS UNE STRING NI UN NOMBRE
                     if (typeElt === "string" && typeElt === "number")
                         return false;
-                break;
+                    break;
                 case "html":
                     //console.log("html");
                     var typeEltObj = Object.prototype.toString.call(line[i]),
@@ -1522,12 +1522,12 @@ var DynTable = function (objet)
                     //SI CE N'EST PAS UNE STRING NI UN NOMBRE
                     if (typeElt === "string" && typeElt === "number")
                         return false;
-                break;
-                //SI CE N'EST AUCUNE DES CAS NORMAUX
+                    break;
+                    //SI CE N'EST AUCUNE DES CAS NORMAUX
                 default:
                     //console.log("erreur de type");
                     return false;
-                break;
+                    break;
             }
         }
         return true;
@@ -1553,7 +1553,7 @@ var DynTable = function (objet)
             switch (DATA.dataType[i]) {
                 case "text":
                 case "descr":
-                    td.appendChild(document.createTextNode(dataLine[i]));
+                    td.appendChild(document.createTextNode(dataLine[i] || ""));
                     break;
                 case "bool":
                     var chkbx = _getElement("bool");
@@ -1581,11 +1581,11 @@ var DynTable = function (objet)
                             td.appendChild(dataLine[i]);
                             break;
                         default:
-                            td.appendChild(document.createTextNode(dataLine[i]));
+                            td.appendChild(document.createTextNode(dataLine[i] || ""));
                     }
                     break;
                 default:
-                    td.appendChild(document.createTextNode(dataLine[i]));
+                    td.appendChild(document.createTextNode(dataLine[i] || ""));
                     break;
             }
             //ON AJOUTE UNE CELLULE UNIQUEMENT SI CE N'EST PAS UNE LINEID
