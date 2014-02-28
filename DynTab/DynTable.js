@@ -1563,7 +1563,7 @@ var DynTable = function (objet)
                     td.align = "center";
                     break;
                 case "ddl":
-                    var ddl = _getDdl(i, DATA.body[i][i]);
+                    var ddl = _getDdl(i, dataLine[i]);
                     ddl.disabled = true;
 
                     td.appendChild(ddl);
