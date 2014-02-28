@@ -66,7 +66,7 @@ var DynTable = function (objet)
     //INFOS RELATIVES AU TABLEAU                
     var TABLE = {
         //IDENTIFIANT DE LA TABLE
-        ID: "DynTable" + _selfObj.id,
+        ID: "DynTable",
         //NOMBRE DE COLONNES
         COLS: 0,
         //NOMBRE DE LIGNES
@@ -742,25 +742,96 @@ var DynTable = function (objet)
                 return DATA.body[i];
 
         //LIGNE INTROUVABLE
-        return null;
+        return
     }
 
     /*AJOUTE UNE LIGNE DYNAMIQUEMENT
     * @param {Array} line : les données de la ligne à insérer
-    * @param {String/Number} id : l'identifiant de la ligne au-dessus de laquelle doit être insérée la nouvelle ligne
+    * @param {String/Number} (optionnal) id : l'identifiant de la ligne au-dessus de laquelle doit être insérée la nouvelle ligne. Si absent la ligne est placée en fin de tableau
+    * @returns {Bool} : true si tout s'est bien passé
     */
     this.insertDataBeforeLine = function (line, id)
     {
+        if (_isCorrectLine(line)) {
+                //AJOUT DE LIGNE À UN ENDROIT PRÉCIS
+            if (id) {
+                var elt = document.querySelector("#" + TABLE.ID + " #" + id),
+                    position = _getIndixById(id) || DATA.body.length;
 
+                //SI L'ÉLÉMENT HTML EXISTE ET QU'ON TROUVE LA LIGNE DANS LES DATA INTERNES
+                if (elt && position) {
+                    console.log("insertion précise" ,elt);
+                    //AJOUT D'UN ID SI IL N'EST PAS FOURNIE
+                    if ((line.length + 1) === DATA.dataType.length)
+                        line.push(_getId(true));
+
+                    DATA.body.splice(position, 0, line);
+                    TABLE.ROWS++;
+                    elt.parentElement.insertBefore(_createLine(line), elt);
+                    return true;
+                }
+            }
+
+            console.log("insertion à la fin");
+            //AJOUT EN FIN DE TABLEAU
+            var elt = document.getElementById(TABLE.ID).children[1];
+            //AJOUT D'UN ID SI IL N'EST PAS FOURNIE
+            if ((line.length + 1) === DATA.dataType.length)
+                line.push(_getId(true));
+
+            DATA.body.push(line);
+            TABLE.ROWS++;
+            elt.appendChild(_createLine(line));
+            return true;
+        }
+        return false;
     }
 
     /*MODIFIE LA LIGNE DYNAMIQUEMENT
     * @param {Array} ligne : les données de la ligne à modifier
     * @param {String/Number} id : l'identifiant de la ligne à modifier
+    * @returns {Bool} : true si tout s'est bien passé
     */
     this.updatetDataInLine = function (line, id)
     {
+        if (arguments.length !== 2)
+            throw "Argument(s) null";
 
+        var elt = document.querySelector("#" + TABLE.ID + " #" + id);
+        if (!elt)
+            throw "There is no line with the id '" + id + "' in this table";
+
+        if (_isCorrectLine(line)) {
+            var position = _getIndixById(id);
+
+            DATA.body.splice(position, 1, line);
+            elt.parentNode.replaceChild(_createLine(line), elt);
+            return true;
+        }
+        return false;
+    }
+
+    /*RETOURNE LA POSITION D'UNE LIGNE EN FONCTION DE SON IDENTIFIANT DE LIGNE
+    * @param {String/Number} idLine : identifiant de ligne
+    * @returns {Number} : l'indice de la ligne dans DATA.body
+    */
+    var _getIndixById = function (idLine)
+    {
+        var lineIdIndix = DATA.dataType.indexOf("lineId"),
+            ret = [];
+
+        DATA.body.filter(function (val, ind, arr)
+        {
+            if (val[lineIdIndix] === idLine)
+                ret.push(ind);
+            /*
+              NE RÉAGIT PAS COMME PRÉVUE SI ON FAIT "return ind"
+              RETOURNE L'ÉLÉMENT AU LIEU DE L'INDICE ?????
+              OBLIGÉ DE PASSER PAR LA VARIABLE ret
+            */
+        });
+
+        return ret[0];
     }
     /*
         REGION
@@ -834,28 +905,27 @@ var DynTable = function (objet)
         }
 
         //SEULEMENT 1 LINEID MAX PAR LIGNE
-        if (DATA.dataType.filter(function (val, ind, arr) { return val === "lineId" }).length > 1)
+        var cpt_id = DATA.dataType.filter(function (val, ind, arr) { return val === "lineId" }).length;
+        if (cpt_id > 1)
             throw "Only 1 'lineId' max";
+
+        //ON AJOUTE UN LINEID AUX DONNÉES SI IL N'Y EN A PAS
+        if (cpt_id === 0)
+            DATA.dataType.push("lineId");
 
         //CORPS
         for (var j = 0; j < obj.body.length; j++) {
             DATA.body[j] = [];
-            for (var k = 0; k < obj.body[j].length; k++) {
+            for (var k = 0; k < obj.body[j].length; k++)
                 DATA.body[j].push(obj.body[j][k]);
-            }
+
+            if (cpt_id === 0)
+                DATA.body[j][DATA.body[j].length] = _getId(true);
+
         }
 
-        //ON SE BASE SUR LES ENTÊTES POUR LE NOMBRE DE COLONNES - LE/LES CHAMPS LINEID
-        TABLE.COLS = DATA.header.length - (function ()
-        {
-            var ret = 0;
-            for (var i = 0; i < DATA.dataType.length; i++) {
-                if (DATA.dataType[i] === "lineId")
-                    ret++;
-            }
-
-            return ret;
-        })();
+        //ON SE BASE SUR LES ENTÊTES POUR LE NOMBRE DE COLONNES - LE CHAMPS LINEID
+        TABLE.COLS = DATA.dataType.length - 1;
         TABLE.ROWS = DATA.body.length;
 
         //SI DES ÉVENEMENTS ONT ÉTÉ AJOUTÉS
@@ -993,87 +1063,13 @@ var DynTable = function (objet)
         var tBody = document.createElement("tbody");
 
         for (var i = 0; i < TABLE.ROWS; i++) {
-
-            //LIGNE
-            var tr = document.createElement("tr");
-            tr.id = _getId(i);
-            tr.className = (i % 2 === 0 ? "dyntab-paire" : "dyntab-impaire");
-
             ////PAGINATION
             ////SI ON DÉPASSE LA TAILLE DE LA PAGINATION ON AFFICHE PAS LES LIGNES SUIVANTES
             //if (i >= TABLE.PAGIN)
             //    tr.style.display = "none";
 
-
-            for (var j = 0; j < DATA.header.length; j++) {
-                //CELLULE
-                var td = document.createElement("td");
-
-                if (DATA.body[i][j] || typeof DATA.body[i][j] === typeof 0) {
-                    switch (DATA.dataType[j]) {
-                        case "text":
-                        case "descr":
-                            td.appendChild(document.createTextNode(DATA.body[i][j]));
-                            break;
-                        case "bool":
-                            var chkbx = _getElement("bool");
-                            chkbx.checked = (DATA.body[i][j] === 1 ? true : false);
-                            chkbx.disabled = true;
-                            td.appendChild(chkbx);
-                            td.align = "center";
-                            break;
-                        case "ddl":
-                            var ddl = _getDdl(j, DATA.body[i][j]);
-                            ddl.disabled = true;
-
-                            td.appendChild(ddl);
-                            break;
-                        case "lineId":
-                            //L'IDENTIFIANT DE LA LIGNE
-                            tr.id = DATA.body[i][j];
-                            break;
-                        case "html":
-                            switch (typeof DATA.body[i][j]) {
-                                case "string":
-                                    td.innerHTML = DATA.body[i][j];
-                                    break;
-                                case "object":
-                                    td.appendChild(DATA.body[i][j]);
-                                    break;
-                                default:
-                                    td.appendChild(document.createTextNode(DATA.body[i][j]));
-                            }
-                            break;
-                        default:
-                            td.appendChild(document.createTextNode(DATA.body[i][j]));
-                            break;
-                    }
-                }
-                else
-                    td.innerHTML = "";
-
-                //ON AJOUTE UNE CELLULE UNIQUEMENT SI CE N'EST PAS UNE LINEID
-                if (DATA.dataType[j] !== "lineId")
-                    tr.appendChild(td);
-            }
-
-            //AJOUT DES BOUTONS
-            if (TABLE.ADDL.on || TABLE.UPDL.on || TABLE.DELL.on || TABLE.ADDL.before || TABLE.UPDL.before || TABLE.DELL.before)
-                tr.appendChild(_getButtons());
-
-            //AJOUT DU CLICK SUR LA LIGNE
-            if (TABLE.CLIL)
-                tr.addEventListener("click", function (e)
-                {
-                    var cible = e.target;
-
-                    while (cible.tagName !== "TR") {
-                        cible = cible.parentElement;
-                    }
-
-                    EVENT.LineClick && EVENT.LineClick(e, cible);
-                }, false);
-
+            var tr = _createLine(DATA.body[i]);
+            tr.className = (i % 2 === 0 ? "dyntab-paire" : "dyntab-impaire");
             tBody.appendChild(tr);
         }
 
@@ -1408,7 +1404,7 @@ var DynTable = function (objet)
     var _getId = function (Default)
     {
         if (Default !== undefined)
-            return "T" + _selfObj.id + "line" + Default;
+            return "T" + _selfObj.id + "line" + Math.random().toString().split(".")[1];
 
         return Math.random().toString().split(".")[1] + new Date().getTime();
     };
@@ -1465,17 +1461,166 @@ var DynTable = function (objet)
     * @param {Array} line : la ligne à vérifier
     * @returns {Bool}
     */
-    var _isCorrectLine = function ()
+    var _isCorrectLine = function (line)
     {
+        if (line === undefined)
+            return false;
+        //console.log("définie OK");
 
+        if (!Array.isArray(line))
+            return false;
+        //console.log("tableau OK");
+
+        //ON VÉRIFIE LA TAILLE DE LA LIGNE
+        if (line.length !== TABLE.COLS && line.length !== (TABLE.COLS + 1))
+            return false;
+        //console.log("taille OK");
+
+        //ON COMPARE LES TYPES DE CHAQUE COLONNE AVEC LES DATATYPE ATTENDUES
+        for (var i = 0; i < DATA.dataType.length; i++) {
+            switch (DATA.dataType[i]) {
+                //SI C'EST UNE CHECKBOX
+                case "bool":
+                    //console.log("Bool");
+                    if (isNaN(parseInt(line[i], 10)) || (parseInt(line[i], 10) !== 1 && parseInt(line[i], 10) !== 0))
+                        return false;
+                break;
+                //SI C'EST UNE DDL
+                case "ddl":
+                    //console.log("DDL");
+                    var trouve = false;
+
+                    top:
+                    for (var j = 0; j < DATA.values[i].length; j++)
+                        for (var k in DATA.values[i][j])
+                            if (DATA.values[i][j][k] === line[i]) {
+                                trouve = true;
+                                break top;
+                            }
+                        
+                    return trouve;
+                break;
+                //SI IL S'AGIT DES CHAMPS HABITUEL
+                case "text":
+                case "descr":
+                case "lineId":
+                    //console.log("text/descr/lineId");
+                    var typeElt = typeof line[i];
+
+                    //SI CE N'EST PAS UNE STRING NI UN NOMBRE
+                    if (typeElt === "string" && typeElt === "number")
+                        return false;
+                break;
+                case "html":
+                    //console.log("html");
+                    var typeEltObj = Object.prototype.toString.call(line[i]),
+                        typeElt = typeof line[i];
+
+                    //SI CE N'EST PAS UN OBJET HTML
+                    if (!/HTML/g.test(typeEltObj) && typeElt === "object")
+                        return false;
+                    //SI CE N'EST PAS UNE STRING NI UN NOMBRE
+                    if (typeElt === "string" && typeElt === "number")
+                        return false;
+                break;
+                //SI CE N'EST AUCUNE DES CAS NORMAUX
+                default:
+                    //console.log("erreur de type");
+                    return false;
+                break;
+            }
+        }
+        return true;
+    };
+
+    /*CRÉÉ UNE LIGNE À PARTIR DES DONNÉES
+    * @param {Array} dataLine
+    * @returns {Element}
+    */
+    var _createLine = function (dataLine)
+    {
+        if (!dataLine)
+            throw "Argument null";
+
+        if (!Array.isArray(dataLine))
+            throw "Argument is not an Array";
+
+        var tr = document.createElement("tr");
+
+        for (var i = 0; i < dataLine.length; i++) {
+            var td = document.createElement("td");
+
+            switch (DATA.dataType[i]) {
+                case "text":
+                case "descr":
+                    td.appendChild(document.createTextNode(dataLine[i]));
+                    break;
+                case "bool":
+                    var chkbx = _getElement("bool");
+                    chkbx.checked = !!dataLine[i];
+                    chkbx.disabled = true;
+                    td.appendChild(chkbx);
+                    td.align = "center";
+                    break;
+                case "ddl":
+                    var ddl = _getDdl(i, DATA.body[i][i]);
+                    ddl.disabled = true;
+
+                    td.appendChild(ddl);
+                    break;
+                case "lineId":
+                    //L'IDENTIFIANT DE LA LIGNE
+                    tr.id = dataLine[i];
+                    break;
+                case "html":
+                    switch (typeof dataLine[i]) {
+                        case "string":
+                            td.innerHTML = dataLine[i];
+                            break;
+                        case "object":
+                            td.appendChild(dataLine[i]);
+                            break;
+                        default:
+                            td.appendChild(document.createTextNode(dataLine[i]));
+                    }
+                    break;
+                default:
+                    td.appendChild(document.createTextNode(dataLine[i]));
+                    break;
+            }
+            //ON AJOUTE UNE CELLULE UNIQUEMENT SI CE N'EST PAS UNE LINEID
+            if (DATA.dataType[i] !== "lineId")
+                tr.appendChild(td);
+        }
+
+        //AJOUT DES BOUTONS
+        if (TABLE.ADDL.on || TABLE.UPDL.on || TABLE.DELL.on || TABLE.ADDL.before || TABLE.UPDL.before || TABLE.DELL.before)
+            tr.appendChild(_getButtons());
+
+        //AJOUT DU CLICK SUR LA LIGNE
+        if (TABLE.CLIL)
+            tr.addEventListener("click", function (e)
+            {
+                var cible = e.target;
+
+                while (cible.tagName !== "TR") {
+                    cible = cible.parentElement;
+                }
+
+                EVENT.LineClick && EVENT.LineClick(e, cible);
+            }, false);
+
+        return tr;
     };
 
     /*
     * @CTOR
     */
-    if (objet)
-        this.setData(objet);
-
     //GÉNÉRATION DE L'ID DE L'OBJET
     _selfObj.id = _getId();
+    //ET DE L'ÉLÉMENT HTML
+    TABLE.ID += _selfObj.id;
+
+    if (objet)
+        this.setData(objet);
 }
