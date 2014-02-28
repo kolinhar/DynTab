@@ -738,7 +738,7 @@ var DynTable = function (objet)
         var idPosition = DATA.dataType.indexOf("lineId");
 
         for (var i = 0; i < DATA.body.length; i++)
-            if (DATA.body[i][idPosition] === id)
+            if (DATA.body[i][idPosition].toString() === id.toString())
                 return DATA.body[i];
 
         //LIGNE INTROUVABLE
