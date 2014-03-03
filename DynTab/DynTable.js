@@ -793,7 +793,7 @@ var DynTable = function (objet)
     * @param {String/Number} id : l'identifiant de la ligne à modifier
     * @returns {Bool} : true si tout s'est bien passé
     */
-    this.updatetDataInLine = function (line, id)
+    this.updateDataInLine = function (line, id)
     {
         if (arguments.length !== 2)
             throw "Argument(s) null";
@@ -807,7 +807,11 @@ var DynTable = function (objet)
             var position = _getIndixById(id);
 
             DATA.body.splice(position, 1, line);
-            elt.parentNode.replaceChild(_createLine(line), elt);
+            var newLine = _createLine(line);
+            if (!newLine.id)
+                newLine.id = id;
+
+            elt.parentNode.replaceChild(newLine, elt);
             return true;
         }
         return false;
@@ -1510,7 +1514,7 @@ var DynTable = function (objet)
                     var typeElt = typeof line[i];
 
                     //SI CE N'EST PAS UNE STRING NI UN NOMBRE
-                    if (typeElt === "string" && typeElt === "number")
+                    if (typeElt !== "string" && typeElt !== "number")
                         return false;
                     break;
                 case "html":
@@ -1522,7 +1526,7 @@ var DynTable = function (objet)
                     if (!/HTML/g.test(typeEltObj) && typeElt === "object")
                         return false;
                     //SI CE N'EST PAS UNE STRING NI UN NOMBRE
-                    if (typeElt === "string" && typeElt === "number")
+                    if (typeElt !== "string" && typeElt !== "number")
                         return false;
                     break;
                     //SI CE N'EST AUCUNE DES CAS NORMAUX
