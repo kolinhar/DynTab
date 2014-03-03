@@ -755,8 +755,9 @@ var DynTable = function (objet)
         if (_isCorrectLine(line)) {
             //AJOUT DE LIGNE À UN ENDROIT PRÉCIS
             if (id) {
-                var elt = document.querySelector("#" + TABLE.ID + " #" + id),
-                    position = _getIndixById(id) || DATA.body.length;
+                //@HACK : notation document.querySelector("#" + TABLE.ID + " #" + id); plante
+                var elt = document.querySelector("#" + TABLE.ID + " tr[id='" + id + "']");
+                position = _getIndixById(id) || DATA.body.length;
 
                 //SI L'ÉLÉMENT HTML EXISTE ET QU'ON TROUVE LA LIGNE DANS LES DATA INTERNES
                 if (elt && position) {
@@ -797,7 +798,8 @@ var DynTable = function (objet)
         if (arguments.length !== 2)
             throw "Argument(s) null";
 
-        var elt = document.querySelector("#" + TABLE.ID + " #" + id);
+        //@HACK : notation document.querySelector("#" + TABLE.ID + " #" + id); plante
+        var elt = document.querySelector("#" + TABLE.ID + " tr[id='" + id + "']");
         if (!elt)
             throw "There is no line with the id '" + id + "' in this table";
 
