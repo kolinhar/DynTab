@@ -756,8 +756,8 @@ var DynTable = function (objet)
             //AJOUT DE LIGNE À UN ENDROIT PRÉCIS
             if (id) {
                 //@HACK : notation document.querySelector("#" + TABLE.ID + " #" + id); plante
-                var elt = document.querySelector("#" + TABLE.ID + " tr[id='" + id + "']");
-                position = _getIndixById(id) || DATA.body.length;
+                var elt = document.querySelector("#" + TABLE.ID + " tr[id='" + id + "']"),
+                    position = _getIndixById(id) || DATA.body.length;
 
                 //SI L'ÉLÉMENT HTML EXISTE ET QU'ON TROUVE LA LIGNE DANS LES DATA INTERNES
                 if (elt && position) {
