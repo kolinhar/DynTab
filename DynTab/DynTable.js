@@ -761,7 +761,10 @@ var DynTable = function (objet)
 
                 //SI L'ÉLÉMENT HTML EXISTE ET QU'ON TROUVE LA LIGNE DANS LES DATA INTERNES
                 if (elt && position) {
-                    console.log("insertion précise", elt);
+
+                    if (_DEBUG)
+                     console.log("insertion précise", elt);
+
                     //AJOUT D'UN ID SI IL N'EST PAS FOURNIE
                     if ((line.length + 1) === DATA.dataType.length)
                         line.push(_getId(true));
@@ -773,7 +776,9 @@ var DynTable = function (objet)
                 }
             }
 
-            console.log("insertion à la fin");
+            if(_DEBUG)
+                console.log("insertion à la fin");
+
             //AJOUT EN FIN DE TABLEAU
             var elt = document.getElementById(TABLE.ID).children[1];
             //AJOUT D'UN ID SI IL N'EST PAS FOURNIE
@@ -828,7 +833,7 @@ var DynTable = function (objet)
 
         DATA.body.filter(function (val, ind, arr)
         {
-            if (val[lineIdIndix] === idLine)
+            if (val[lineIdIndix].toString() === idLine.toString())
                 ret.push(ind);
             /*
               NE RÉAGIT PAS COMME PRÉVUE SI ON FAIT "return ind"
