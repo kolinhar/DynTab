@@ -1365,7 +1365,7 @@ var DynTable = function (objet)
                 elm.value = obj;
                 elm.appendChild(document.createTextNode(DATA.values[ind][i][obj]));
 
-                if (defVal === obj)
+                if (defVal.toString() === obj.toString())
                     elm.selected = true;
             }
 
