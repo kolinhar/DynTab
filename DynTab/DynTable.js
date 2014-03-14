@@ -1348,7 +1348,7 @@ var DynTable = function (objet)
 
     /*CRÉÉ LES ÉLÉMENTS OPTIONS CORRESPONDANTS À L'INDICE DE LA DDL
     * @param {Number} ind : position de la ddl corespondante
-    * @param {String} defVal : valeur sélectionnée
+    * @param {String} (Optionnal) defVal : valeur sélectionnée
     * @returns {Array} : contient les éléments option
     */
     var _getOpt = function (ind, defVal)
@@ -1365,7 +1365,7 @@ var DynTable = function (objet)
                 elm.value = obj;
                 elm.appendChild(document.createTextNode(DATA.values[ind][i][obj]));
 
-                if (defVal.toString() === obj.toString())
+                if (defVal && defVal.toString() === obj.toString())
                     elm.selected = true;
             }
 
