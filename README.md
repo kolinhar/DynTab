@@ -1,7 +1,7 @@
 DynTab
 ======
 
-##Tableau HTML dynamique en Javascript
+## Tableau HTML dynamique en Javascript
 
 Alimenté par un JSON de la forme:
 ```js
